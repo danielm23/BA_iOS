@@ -1,18 +1,18 @@
 # Anforderungen
-Die Anwendung richtet sich an Veranstalter von Veranstaltungen an der Johannes-Gutenberg Universität Mainz. Die Bandbreite an Veranstaltungen erstreckt sich von einzelnen Terminen über mehrtägige Konferenzen bis hin zum Tag der offenen Tür mit vielfältigen Angeboten. 
-Ziel ist dabei jedes mal, Gästen auf einfache Art und Weise Informationen vor und während der Veranstaltung anzubieten. Hauptsächlich wird eine Programmübersicht bereitgestellt, welche Informationen zu Ort und Zeit der Programmpunkte beinhaltet. Die Orte sind auf einer Karte visualisiert und eine Navigationsfunktion erlaubt das schnelle Auffinden des Veranstaltungsortes. Veranstaltungen können sich über mehrere Tage erstrecken, parallele Tracks beinhalten und Unterveranstaltungen beinhalten. Zu den einzelnen Programmpunkten stehen zusätzliche Informationen bereit (Beschreibungstext, beteiligte Personen, Kategorien, …). Benutzer können sich Favoriten auswählen und einen persönlichen Terminplan erstellen. Neben den Programmpunkten werden Gästen über die App auch allgemeine Informationen bereitgestellt. Während der Veranstaltung können Veranstalter Nachrichten veröffentlichen und Änderungen am Programm vornehmen. Der Zugang zu Konferenzen kann beispielsweise über QR Codes oder frei wählbare Kennungen angeboten werden.
-Weiterführende Ideen sind eine erweiterte Navigation auf dem Campus (evt. mit Augmented Reality), Informationen rund um den Campus (Mensaangebot, Verkehrsanbindung, ...) oder Push-Nachrichten an Teilnehmende.
-Neben der Anwendung für Konferenzen sind eine weitere Zielgruppe auch Studierende. Diese können über die App ihren Stundenplan verwalten und finden Räume einfacher. Auch unabhängige Gäste können ohne einen Login auf die Karte mit Suchfunktion zugreifen und bekommen einige Basisinformationen zum Campus.
+Die Anwendung richtet sich an Veranstalter von Veranstaltungen an der Johannes-Gutenberg Universität Mainz. Die Bandbreite an Veranstaltungen erstreckt sich von einzelnen Terminen über mehrtägige Konferenzen bis hin zum Tag der offenen Tür mit vielfältigen Angeboten. 
+Ziel ist dabei jedes mal, Gästen auf einfache Art und Weise Informationen vor und während der Veranstaltung anzubieten. Hauptsächlich wird eine Programmübersicht bereitgestellt, welche Informationen zu Ort und Zeit der Programmpunkte beinhaltet. Die Orte sind auf einer Karte visualisiert und eine Navigationsfunktion erlaubt das schnelle Auffinden des Veranstaltungsortes. Veranstaltungen können sich über mehrere Tage erstrecken, parallele Tracks beinhalten und Unterveranstaltungen beinhalten. Zu den einzelnen Programmpunkten stehen zusätzliche Informationen bereit (Beschreibungstext, beteiligte Personen, Kategorien, …). Benutzer können sich Favoriten auswählen und einen persönlichen Terminplan erstellen. Neben den Programmpunkten werden Gästen über die App auch allgemeine Informationen bereitgestellt. Während der Veranstaltung können Veranstalter Nachrichten veröffentlichen und Änderungen am Programm vornehmen. Der Zugang zu Konferenzen kann beispielsweise über QR Codes oder frei wählbare Kennungen angeboten werden.
+Weiterführende Ideen sind eine erweiterte Navigation auf dem Campus (evt. mit Augmented Reality), Informationen rund um den Campus (Mensaangebot, Verkehrsanbindung, ...) oder Push-Nachrichten an Teilnehmende.
+Neben der Anwendung für Konferenzen sind eine weitere Zielgruppe auch Studierende. Diese können über die App ihren Stundenplan verwalten und finden Räume einfacher. Auch unabhängige Gäste können ohne einen Login auf die Karte mit Suchfunktion zugreifen und bekommen einige Basisinformationen zum Campus.
 
 # Entwicklungsprozess
-Bei der Entwicklung möchte ich eine agile Herangehensweise wählen und Methoden aus Scrum adaptieren. Diese sind normalerweise für Teams gedacht, einige Grundideen möchte ich versuchen auch allein zu verfolgen, dazu gehören:
+Bei der Entwicklung möchte ich eine agile Herangehensweise wählen und Methoden aus Scrum adaptieren. Diese sind normalerweise für Teams gedacht, einige Grundideen möchte ich versuchen auch allein zu verfolgen, dazu gehören:
 - Interaktive Herangehensweise statt Wasserfall,
-- Zweiwöchige Sprints mit Release und Retrospektive am Ende
+- Zweiwöchige Sprints mit Release und Retrospektive am Ende
 - Test Driven Development
-- Reflexion (tägliche kurze Berichte über Fortschritt und Ziele)
+- Reflexion (tägliche kurze Berichte über Fortschritt und Ziele)
 - Verwaltung des Backlogs an Kanban angelehnt
-- Sauberer, selbsterklärender, übersichtlicher, sicherer und performanter Code
-Ich möchte einen Top-Down Ansatz in der Entwicklung wählen. Zu Beginn beschäftige ich mich intensive mit der Thematik und relativ entwickle ich einen Prototypen für die User Interaktion. Über diesen diskutiere ich mit Stakeholdern und generiere Requirements. Die Usability steht im Zentrum und gibt die Funktionen vor. Meiner Erfahrung nach ist eine zu sehr auf die Softwarearchitektur und das Datenmodel fixierte Entwicklung, bei der am Ende die Benutzeroberfläche erstellt wird, zu starr und es kommt kein optimales Produkt heraus. Tolle Algorithmen und viel Funktionalität sind wichtig, doch das Ziel sind zufriedene Benutzer. Auf der Grundlage eines durchdachten Konzeptes und Requirements werde ich iterativ über mehrere Sprints die Features implementieren und intensiv schriftlich dokumentieren.
+- Sauberer, selbsterklärender, übersichtlicher, sicherer und performanter Code
+Ich möchte einen Top-Down Ansatz in der Entwicklung wählen. Zu Beginn beschäftige ich mich intensive mit der Thematik und relativ entwickle ich einen Prototypen für die User Interaktion. Über diesen diskutiere ich mit Stakeholdern und generiere Requirements. Die Usability steht im Zentrum und gibt die Funktionen vor. Meiner Erfahrung nach ist eine zu sehr auf die Softwarearchitektur und das Datenmodel fixierte Entwicklung, bei der am Ende die Benutzeroberfläche erstellt wird, zu starr und es kommt kein optimales Produkt heraus. Tolle Algorithmen und viel Funktionalität sind wichtig, doch das Ziel sind zufriedene Benutzer. Auf der Grundlage eines durchdachten Konzeptes und Requirements werde ich iterativ über mehrere Sprints die Features implementieren und intensiv schriftlich dokumentieren.
 
 # Szenarien
 ## Tagung
@@ -34,12 +34,12 @@ Am Tag der offenen Tür kommt Florian auf den Campus und nutzt die App, um sich 
 Das System umfasst im wesentlichen drei Hauptkomponenten.
 1. Eine Clientsoftware
 2. Ein Backend Server
-3. Ein Webinterface für die Konfiguration
-Die unten aufgeführten Technologien sind als vage Ideen zu verstehen. 
+3. Ein Webinterface für die Konfiguration
+Die unten aufgeführten Technologien sind als vage Ideen zu verstehen. 
 
 ## Server
 ### Aufgabe
-Der Server ist die zentrale Komponente der Architektur. Hier laufen alle Informationen zusammen, werden verarbeitet und weitergereicht. Für die verschiedenen Clients werden die Informationen über eine REST API als JSON Datensätze bereitgestellt. 
+Der Server ist die zentrale Komponente der Architektur. Hier laufen alle Informationen zusammen, werden verarbeitet und weitergereicht. Für die verschiedenen Clients werden die Informationen über eine REST API als JSON Datensätze bereitgestellt. 
 
 ### Technologie
 Das Betriebssystem des Servers dient Ubuntu. Als Backend des Systems wird das Swift Framework Vapor 3 verwendet. 
@@ -50,16 +50,16 @@ Für das Anlegen von Veranstaltungen ist ein Account nötig. Nach Login mit Benu
 
 ## Datenbank
 ### Aufgabe
-Die Datenbank enthält alle Daten zu Veranstaltungen, sowie Orten und Benutzern. Das Backend abstrahiert den Zugriff darauf über eine API.
+Die Datenbank enthält alle Daten zu Veranstaltungen, sowie Orten und Benutzern. Das Backend abstrahiert den Zugriff darauf über eine API.
 ### Technologie
 Als Datenbanksystem ist MariaDB vorstellbar.
 ## Mobile Clients
 ### Aufgabe
-Die Clientanwendungen sind die Hauptkomponente der Architektur. Hierüber bekommen Benutzer die Inhalte dargestellt und interagieren mit dem System.
+Die Clientanwendungen sind die Hauptkomponente der Architektur. Hierüber bekommen Benutzer die Inhalte dargestellt und interagieren mit dem System.
 ### Technologie
-Es gibt eine native iOS Anwendung, die alle Dienste unterstützt. Perspektivisch ist eine Android Applikation angedacht, die zunächst wohl aber nur als ein Webview realisiert wird. Dieser kann dann auch unabhängig auf einer Webseite bereitgestellt werden.
+Es gibt eine native iOS Anwendung, die alle Dienste unterstützt. Perspektivisch ist eine Android Applikation angedacht, die zunächst wohl aber nur als ein Webview realisiert wird. Dieser kann dann auch unabhängig auf einer Webseite bereitgestellt werden.
 ## Webanwendung
 ### Aufgabe
-Die Webanwendung richtet sich an Veranstaltern, die ihre Konferenz darüber abbilden können. Auch Zugänge für Gäste können hier erstellt werden.
+Die Webanwendung richtet sich an Veranstaltern, die ihre Konferenz darüber abbilden können. Auch Zugänge für Gäste können hier erstellt werden.
 ### Technologie
-Vermutlich eignet sich ein modernes Java Script Framework (Angular, Vue.js, ...)hierfür ganz gut. Über eine REST Schnittstelle können die Daten an das Backend übermittelt werden.
+Vermutlich eignet sich ein modernes Java Script Framework (Angular, Vue.js, ...)hierfür ganz gut. Über eine REST Schnittstelle können die Daten an das Backend übermittelt werden.
