@@ -1,16 +1,7 @@
-//
-//  EventsViewModel.swift
-//  QRCodeReader
-//
-//  Created by Daniel Müller on 16.04.18.
-//  Copyright © 2018 AppCoda. All rights reserved.
-//
-
 import Foundation
 import RxSwift
 import CoreData
-var disposeBag = DisposeBag()
-
+   
 struct EventsViewModel {
     
     public var events = Variable<[PersistantEvent]>([])

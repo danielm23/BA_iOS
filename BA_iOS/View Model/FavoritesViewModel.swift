@@ -24,9 +24,14 @@ class FavoritesViewModel {
             .disposed(by: disposeBag)
     }
     
+    // change to switch status
     public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         favoritesModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
         print("addEvents()")
         print(newFavorite)
+    }
+    
+    public func updateEvents() {
+        favoritesModel.reloadEvents()
     }
 }

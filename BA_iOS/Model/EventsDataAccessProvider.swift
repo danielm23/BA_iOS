@@ -5,7 +5,6 @@ import CoreData
 
 class EventsDataAccessProvider {
     
-    // can be observed by ViewModel
     private var storedEvents = Variable<[PersistantEvent]>([])
     private var managedObjectContext : NSManagedObjectContext
     
@@ -46,7 +45,6 @@ class EventsDataAccessProvider {
                 let entity = NSEntityDescription.entity(forEntityName: "PersistantEvent", in: self.context)
                 let persistantEvent = PersistantEvent(entity: entity!, insertInto: self.context)
                 persistantEvent.configure(event: newEvent)
-                //self.configureEvent(persistantEvent: persistantEvent, usingJSON: newEvent)
             }
             self.appDelegate.saveContext()
             self.storedEvents.value = self.fetchData()
@@ -90,10 +88,6 @@ class EventsDataAccessProvider {
                     decoder.dateDecodingStrategy = .iso8601
                     let newEvents = try decoder.decode([Event].self, from: data)
                     self.storeNewEvents(loadedEvents: newEvents)
-                    print(newEvents)
-                    print("xxxxxxxxxxxx")
-                    print("xxxxxxxxxxxx")
-                    print("xxxxxxxxxxxx")
                 }
                 catch let jsonErr {
                     print("Error json: ", jsonErr)

@@ -1,16 +1,9 @@
-//
-//  FavoriteModel.swift
-//  QRCodeReader
-//
-//  Created by Daniel Müller on 22.04.18.
-//  Copyright © 2018 AppCoda. All rights reserved.
-//
-
 import Foundation
 import RxSwift
 import CoreData
 
 class FavoritesModel {
+    
     private var favoriteEvents = Variable<[Favorites]>([])
     private var managedObjectContext : NSManagedObjectContext
     
@@ -22,13 +15,12 @@ class FavoritesModel {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         favoriteEvents.value = [Favorites]()
         managedObjectContext = delegate.persistentContainer.viewContext
-        
         favoriteEvents.value = fetchData()
     }
     
     private func fetchData() -> [Favorites] {
         let favoritesFetchRequest = Favorites.createFetchRequest()
-        let sort = NSSortDescriptor(key: "number", ascending: true)
+        let sort = NSSortDescriptor(key: "created", ascending: true)
         favoritesFetchRequest.sortDescriptors = [sort]
         do {
             print("fetchData()")
@@ -40,11 +32,8 @@ class FavoritesModel {
     }
     public func fetchObservableData() -> Observable<[Favorites]> {
         favoriteEvents.value = fetchData()
-        print(favoriteEvents.value)
-        print("<-fetchObservableData()")
         return favoriteEvents.asObservable()
     }
-    
     
     func storeNewEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
@@ -52,14 +41,13 @@ class FavoritesModel {
         DispatchQueue.main.async { [unowned self] in
                 let entity = NSEntityDescription.entity(forEntityName: "Favorites", in: self.context)
                 let favorite = Favorites(entity: entity!, insertInto: self.context)
-            print("storeNewEvents()")
-                print(newFavorite)
                 favorite.configure(event: newFavorite, number: orderNumber)
-                print(favorite)
             }
-            print("<- stored Event")
-            self.appDelegate.saveContext()
-            self.favoriteEvents.value = self.fetchData()
-        }
+        self.appDelegate.saveContext()
+        //self.favoriteEvents.value = self.fetchData()
     }
-
+    
+    public func reloadEvents() {
+        favoriteEvents.value = fetchData()
+    }
+}
