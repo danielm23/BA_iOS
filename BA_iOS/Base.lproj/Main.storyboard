@@ -97,9 +97,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dhU-gA-RW0">
-                                <rect key="frame" x="96" y="162" width="128" height="30"/>
+                                <rect key="frame" x="85" y="158" width="151" height="22"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Save as Favorite"/>
                                 <connections>
                                     <action selector="button:" destination="wMI-we-n6J" eventType="touchDown" id="c2V-Nw-v0Z"/>
                                 </connections>
@@ -109,12 +108,13 @@
                         <viewLayoutGuide key="safeArea" id="sYR-mt-tqy"/>
                     </view>
                     <connections>
+                        <outlet property="button" destination="dhU-gA-RW0" id="rAq-qu-04E"/>
                         <outlet property="label" destination="4Gl-yI-p2T" id="qIq-du-nbz"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MBy-AS-8AA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2342" y="446"/>
+            <point key="canvasLocation" x="2341.875" y="445.77464788732397"/>
         </scene>
         <!--Map-->
         <scene sceneID="jS5-l9-nAR">

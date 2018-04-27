@@ -35,19 +35,46 @@ class FavoritesModel {
         return favoriteEvents.asObservable()
     }
     
+    func eventIsFavorite(event: PersistantEvent) -> Bool{
+        var isFavorite = false
+        for favorite in favoriteEvents.value {
+            if favorite.event.id == event.id {
+                isFavorite = true
+                break
+            }
+        }
+        return isFavorite
+    }
+    
     func storeNewEvents(newFavorite: PersistantEvent, orderNumber: Int) {
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-
-        DispatchQueue.main.async { [unowned self] in
+        if eventIsFavorite(event: newFavorite) {
+            context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+            
+            DispatchQueue.main.async { [unowned self] in
                 let entity = NSEntityDescription.entity(forEntityName: "Favorites", in: self.context)
                 let favorite = Favorites(entity: entity!, insertInto: self.context)
                 favorite.configure(event: newFavorite, number: orderNumber)
             }
-        self.appDelegate.saveContext()
-        //self.favoriteEvents.value = self.fetchData()
+            self.appDelegate.saveContext()
+        }
+        else {
+            print("entry is already favorite")
+        }
     }
     
     public func reloadEvents() {
         favoriteEvents.value = fetchData()
     }
+    /*
+    func storeNewEvents(newFavorite: PersistantEvent, orderNumber: Int) {
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
+        DispatchQueue.main.async { [unowned self] in
+            let entity = NSEntityDescription.entity(forEntityName: "Favorites", in: self.context)
+            let favorite = Favorites(entity: entity!, insertInto: self.context)
+            favorite.configure(event: newFavorite, number: orderNumber)
+        }
+        self.appDelegate.saveContext()
+        //self.favoriteEvents.value = self.fetchData()
+    }*/
 }

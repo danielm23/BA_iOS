@@ -12,4 +12,8 @@ class EventDetailViewModel {
     public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         eventDetailModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
     }
+    
+    public func eventIsFavorite() -> Bool {
+        return eventDetailModel.eventIsFavorite(event: event)
+    }
 }
