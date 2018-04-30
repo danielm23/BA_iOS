@@ -8,8 +8,15 @@ class FavoritesViewModel {
     private var disposeBag = DisposeBag()
     private var favoritesModel = FavoritesModel()
     
+    var selectedEvent = PersistantEvent()
+    var selectedEvetntInt: Int = 0
+    
     init() {
         fetchEventsAndUpdateObservableEvents()
+    }
+    
+    public func getEvent(index: Int) -> PersistantEvent {
+        return events.value[index].event
     }
     
     public func getEvents() -> Variable<[Favorites]> {
@@ -24,7 +31,6 @@ class FavoritesViewModel {
             .disposed(by: disposeBag)
     }
     
-    // change to switch status
     public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         favoritesModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
         print("addEvents()")
@@ -33,5 +39,9 @@ class FavoritesViewModel {
     
     public func updateEvents() {
         favoritesModel.reloadEvents()
+    }
+    
+    public func removeFavorite(withIndex index: Int) {
+        favoritesModel.removeFavorite(withIndex: index)
     }
 }

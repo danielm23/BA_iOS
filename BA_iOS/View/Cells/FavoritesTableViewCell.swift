@@ -16,7 +16,5 @@ class FavoritesTableViewCell: UITableViewCell{
         dateFormatter.dateFormat = "dd.MM.yyyy"
         title?.text = item.event.name
         subtitle?.text = dateFormatter.string(from: item.created!)
-        print("FavoritesTableViewCell.configure")
-        print(item)
     }
 }

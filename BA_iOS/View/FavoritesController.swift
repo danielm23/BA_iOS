@@ -8,11 +8,14 @@ class FavoritesController: UIViewController {
     var favoritesViewModel = FavoritesViewModel()
     var disposeBag = DisposeBag()
     
+    
     @IBOutlet var favoritesTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         populateFavoritesTableView()
+        setupTodoListTableViewCellWhenDeleted()
+        setupTodoListTableViewCellWhenItemAccessoryButtonTapped()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -36,5 +39,28 @@ class FavoritesController: UIViewController {
                 cell.configure(item: element)
             }
         .disposed(by: disposeBag)
+    }
+    
+    private func setupTodoListTableViewCellWhenDeleted() {
+        favoritesTableView.rx.itemDeleted
+            .subscribe(onNext : { indexPath in
+                self.favoritesViewModel.removeFavorite(withIndex: indexPath.row)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func setupTodoListTableViewCellWhenItemAccessoryButtonTapped() {
+        favoritesTableView.rx.itemAccessoryButtonTapped
+            .subscribe(onNext : { indexPath in
+                self.favoritesViewModel.selectedEvent = self.favoritesViewModel.getEvent(index: indexPath.row)
+                self.switchVC()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func switchVC() {
+        let destViewController = storyboard?.instantiateViewController(withIdentifier: "EventDetailController") as! EventDetailController
+        destViewController.eventDetailViewModel.event = favoritesViewModel.selectedEvent
+        self.show(destViewController, sender: nil)
     }
 }

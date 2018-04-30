@@ -65,6 +65,18 @@ class FavoritesModel {
     public func reloadEvents() {
         favoriteEvents.value = fetchData()
     }
+    
+    public func removeFavorite(withIndex index: Int) {
+        managedObjectContext.delete(favoriteEvents.value[index])
+        
+        do {
+            try managedObjectContext.save()
+            favoriteEvents.value = fetchData()
+        } catch {
+            fatalError("error delete data")
+        }
+    }
+    
     /*
     func storeNewEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
