@@ -5,26 +5,20 @@ import RxCocoa
 
 class FavoritesController: UIViewController {
     
+    @IBOutlet var favoritesTableView: UITableView!
+    
     var favoritesViewModel = FavoritesViewModel()
     var disposeBag = DisposeBag()
-    
-    
-    @IBOutlet var favoritesTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         populateFavoritesTableView()
-        setupTodoListTableViewCellWhenDeleted()
-        setupTodoListTableViewCellWhenItemAccessoryButtonTapped()
+        setupFavoritesTableViewCellWhenDeleted()
+        setupFavoritesTableViewCellWhenItemAccessoryButtonTapped()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        print("willAppear")
-        updateEvents()
-    }
-    
-    private func updateEvents() {
         favoritesViewModel.updateEvents()
     }
     
@@ -41,7 +35,7 @@ class FavoritesController: UIViewController {
         .disposed(by: disposeBag)
     }
     
-    private func setupTodoListTableViewCellWhenDeleted() {
+    private func setupFavoritesTableViewCellWhenDeleted() {
         favoritesTableView.rx.itemDeleted
             .subscribe(onNext : { indexPath in
                 self.favoritesViewModel.removeFavorite(withIndex: indexPath.row)
@@ -49,7 +43,7 @@ class FavoritesController: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    private func setupTodoListTableViewCellWhenItemAccessoryButtonTapped() {
+    private func setupFavoritesTableViewCellWhenItemAccessoryButtonTapped() {
         favoritesTableView.rx.itemAccessoryButtonTapped
             .subscribe(onNext : { indexPath in
                 self.favoritesViewModel.selectedEvent = self.favoritesViewModel.getEvent(index: indexPath.row)
@@ -61,6 +55,8 @@ class FavoritesController: UIViewController {
     func switchVC() {
         let destViewController = storyboard?.instantiateViewController(withIdentifier: "EventDetailController") as! EventDetailController
         destViewController.eventDetailViewModel.event = favoritesViewModel.selectedEvent
+        destViewController.eventDetailViewModel.isFavorite = destViewController.eventDetailViewModel.eventIsFavorite()
+        print(destViewController.eventDetailViewModel.isFavorite)
         self.show(destViewController, sender: nil)
     }
 }

@@ -5,29 +5,26 @@ import RxCocoa
 
 class EventDetailController: UIViewController {
     
-    var eventDetailViewModel = EventDetailViewModel()
-    var disposeBag = DisposeBag()
-
     @IBOutlet weak var label: UILabel!
-    
     @IBOutlet weak var button: UIButton!
     
-    /*
-    @IBAction func button(_ sender: Any) {
-        eventDetailViewModel.addEvents(newFavorite: eventDetailViewModel.event, orderNumber: 1)
-        button.setTitle(eventDetailViewModel.getButtonText(), for: .normal)
-    }*/
+    var eventDetailViewModel = EventDetailViewModel()
+    var disposeBag = DisposeBag()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(eventDetailViewModel.event)
-        
-        //let event = eventDetailViewModel.event.asObservable()
-        
-        label.text = ""
-        print("set Text")
         label.text = eventDetailViewModel.event.name
-        //note: replace with rxswift implementation
-        //button.setTitle(eventDetailViewModel.getButtonText(), for: .normal)
+        setupFavoriteButton()
+        button.setTitle(eventDetailViewModel.getButtonText(), for: .normal)
+    }
+    
+    private func setupFavoriteButton() {
+        button.rx.tap
+            .subscribe(onNext : { [weak self] _ in
+                self?.eventDetailViewModel.configureButton()
+                self?.button.setTitle(self?.eventDetailViewModel.getButtonText(), for: .normal)
+            })
+            .disposed(by: disposeBag)
     }
 }

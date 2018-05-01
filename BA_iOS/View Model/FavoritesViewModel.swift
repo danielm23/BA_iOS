@@ -15,14 +15,6 @@ class FavoritesViewModel {
         fetchEventsAndUpdateObservableEvents()
     }
     
-    public func getEvent(index: Int) -> PersistantEvent {
-        return events.value[index].event
-    }
-    
-    public func getEvents() -> Variable<[Favorites]> {
-        return events
-    }
-    
     private func fetchEventsAndUpdateObservableEvents() {
         favoritesModel.fetchObservableData().map({ $0 })
             .subscribe(onNext : { (events) in
@@ -31,10 +23,16 @@ class FavoritesViewModel {
             .disposed(by: disposeBag)
     }
     
+    public func getEvent(index: Int) -> PersistantEvent {
+        return events.value[index].event
+    }
+    
+    public func getEvents() -> Variable<[Favorites]> {
+        return events
+    }
+    
     public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
         favoritesModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
-        print("addEvents()")
-        print(newFavorite)
     }
     
     public func updateEvents() {

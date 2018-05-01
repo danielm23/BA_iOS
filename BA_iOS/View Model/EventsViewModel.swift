@@ -1,13 +1,13 @@
 import Foundation
 import RxSwift
 import CoreData
-   
+
 struct EventsViewModel {
     
     public var events = Variable<[PersistantEvent]>([])
     private var eventsDataAccessProvider = EventsDataAccessProvider()
     private var disposeBag = DisposeBag()
-    public var itemSelected = PersistantEvent()
+    public var selectedEvent = PersistantEvent()
     public var selectedItem = PublishSubject<IndexPath>()
     
     init() { 

@@ -15,7 +15,7 @@ class FavoritesModel {
         let delegate = UIApplication.shared.delegate as! AppDelegate
         favoriteEvents.value = [Favorites]()
         managedObjectContext = delegate.persistentContainer.viewContext
-        favoriteEvents.value = fetchData()
+        reloadEvents()
     }
     
     private func fetchData() -> [Favorites] {
@@ -31,7 +31,7 @@ class FavoritesModel {
         }
     }
     public func fetchObservableData() -> Observable<[Favorites]> {
-        favoriteEvents.value = fetchData()
+        reloadEvents()
         return favoriteEvents.asObservable()
     }
     
@@ -71,22 +71,9 @@ class FavoritesModel {
         
         do {
             try managedObjectContext.save()
-            favoriteEvents.value = fetchData()
+            reloadEvents()
         } catch {
             fatalError("error delete data")
         }
     }
-    
-    /*
-    func storeNewEvents(newFavorite: PersistantEvent, orderNumber: Int) {
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
-        DispatchQueue.main.async { [unowned self] in
-            let entity = NSEntityDescription.entity(forEntityName: "Favorites", in: self.context)
-            let favorite = Favorites(entity: entity!, insertInto: self.context)
-            favorite.configure(event: newFavorite, number: orderNumber)
-        }
-        self.appDelegate.saveContext()
-        //self.favoriteEvents.value = self.fetchData()
-    }*/
 }

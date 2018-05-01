@@ -23,16 +23,4 @@ public class PersistantEvent: NSManagedObject {
         self.venueId = Int32(event.venueId)
         self.scheduleId = event.scheduleId
     }
-    /*
-    init() {
-        super.init()
-            id = 1
-            name = ""
-            info = ""
-            startDate = Date()
-            endDate = Date()
-            self.isActive = true
-            self.venueId = 1
-            self.scheduleId = ""
-        }*/
 }
