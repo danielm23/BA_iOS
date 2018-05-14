@@ -3,3 +3,5 @@
 /Packages
 /*.xcodeproj
 /Mapbox.framework
+Mapbox.framework
+/Pods

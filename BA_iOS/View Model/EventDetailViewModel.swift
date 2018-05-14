@@ -17,7 +17,7 @@ class EventDetailViewModel {
             return "Add to favorites" }
     }
     
-    public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
+    public func addFavorite(newFavorite: PersistantEvent, orderNumber: Int) {
         eventDetailModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
         isFavorite = true
     }
@@ -39,7 +39,7 @@ class EventDetailViewModel {
         if isFavorite {
             removeFavorite()
         } else {
-            addEvents(newFavorite: (event), orderNumber: 1)
+            addFavorite(newFavorite: (event), orderNumber: 1)
         }
     }
 }

@@ -1,25 +1,37 @@
 PODS:
-  - Alamofire (4.7.2)
+  - MapboxDirections.swift (0.21.0):
+    - Polyline (~> 4.2)
+  - MapboxGeocoder.swift (0.8.1)
+  - Polyline (4.2.0)
+  - Pulley (2.4.0)
   - RxCocoa (4.1.2):
     - RxSwift (~> 4.0)
   - RxSwift (4.1.2)
 
 DEPENDENCIES:
-  - Alamofire (~> 4.7)
+  - MapboxDirections.swift (~> 0.21)
+  - MapboxGeocoder.swift (~> 0.8)
+  - Pulley
   - RxCocoa (~> 4.0)
   - RxSwift (~> 4.0)
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
-    - Alamofire
+  https://github.com/cocoapods/specs.git:
+    - MapboxDirections.swift
+    - MapboxGeocoder.swift
+    - Polyline
+    - Pulley
     - RxCocoa
     - RxSwift
 
 SPEC CHECKSUMS:
-  Alamofire: e4fa87002c137ba2d8d634d2c51fabcda0d5c223
+  MapboxDirections.swift: 14d32d1601834e15c930cbab4201e57b0f7a2218
+  MapboxGeocoder.swift: 354fccd4834bae4c5b792428559eb87d994d2cf5
+  Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
+  Pulley: 604066ea5d24339a8701b0167a2c8131a589e705
   RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
   RxSwift: e49536837d9901277638493ea537394d4b55f570
 
-PODFILE CHECKSUM: 6221e57a635fb062098b0e65f35b900a5b0818db
+PODFILE CHECKSUM: 317375cc3fdc710d5fe6647fca6e04491a52f10e
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.2

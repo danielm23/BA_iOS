@@ -31,7 +31,7 @@ class FavoritesViewModel {
         return events
     }
     
-    public func addEvents(newFavorite: PersistantEvent, orderNumber: Int) {
+    public func aff(newFavorite: PersistantEvent, orderNumber: Int) {
         favoritesModel.storeNewEvents(newFavorite: newFavorite, orderNumber: orderNumber)
     }
     

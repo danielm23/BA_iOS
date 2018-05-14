@@ -5,6 +5,7 @@ workspace 'BA_iOS'
 target 'BA_iOS' do
     pod 'RxSwift',    '~> 4.0'
     pod 'RxCocoa',    '~> 4.0'
-    pod 'Alamofire', '~> 4.7'
+    pod 'MapboxGeocoder.swift', '~> 0.8'
+    pod 'MapboxDirections.swift', '~> 0.21'
+    pod 'Pulley'
 end
-
