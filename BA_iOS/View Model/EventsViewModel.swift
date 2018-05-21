@@ -4,21 +4,21 @@ import CoreData
 
 struct EventsViewModel {
     
-    public var events = Variable<[PersistantEvent]>([])
+    public var events = Variable<[Event]>([])
     private var eventsDataAccessProvider = EventsDataAccessProvider()
     private var disposeBag = DisposeBag()
-    public var selectedEvent = PersistantEvent()
+    public var selectedEvent = Event()
     public var selectedItem = PublishSubject<IndexPath>()
     
     init() { 
         fetchEventsAndUpdateObservableEvents()
     }
 
-    public func getEvents() -> Variable<[PersistantEvent]> {
+    public func getEvents() -> Variable<[Event]> {
         return events
     }
     
-    public func getEvent(index: Int) -> PersistantEvent {
+    public func getEvent(index: Int) -> Event {
         return events.value[index]
     }
     

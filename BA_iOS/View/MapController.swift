@@ -1,7 +1,6 @@
 import Foundation
 import UIKit
 import MapboxDirections
-import MapboxGeocoder
 import Mapbox
 import MapKit
 

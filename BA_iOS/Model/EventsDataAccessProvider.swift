@@ -38,7 +38,7 @@ class EventsDataAccessProvider {
         return storedEvents.asObservable()
     }
     
-    func storeNewEvents(loadedEvents: [Event]) {
+    func storeNewEvents(loadedEvents: [JsonEvent]) {
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         DispatchQueue.main.async { [unowned self] in
             for newEvent in loadedEvents {
@@ -86,7 +86,7 @@ class EventsDataAccessProvider {
                 do {
                     let decoder = JSONDecoder()
                     decoder.dateDecodingStrategy = .iso8601
-                    let newEvents = try decoder.decode([Event].self, from: data)
+                    let newEvents = try decoder.decode([JsonEvent].self, from: data)
                     self.storeNewEvents(loadedEvents: newEvents)
                 }
                 catch let jsonErr {
