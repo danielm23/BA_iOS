@@ -18,6 +18,6 @@ extension Favorites {
 
     @NSManaged public var number: Int16
     @NSManaged public var created: Date?
-    @NSManaged public var event: PersistantEvent
+    @NSManaged public var event: Event
 
 }

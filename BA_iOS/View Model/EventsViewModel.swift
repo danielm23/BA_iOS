@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import CoreData
 
-struct EventsViewModel {
+struct EventsViewModel {/*
     
     public var events = Variable<[Event]>([])
     private var eventsDataAccessProvider = EventsDataAccessProvider()
@@ -33,5 +33,13 @@ struct EventsViewModel {
     
     public func addEvents(withQrCode code: String) {
         eventsDataAccessProvider.loadEventsOfSchedule(qrCode: code)
-    }
+    }*/
+
+
+
+
+
+
+
+
 }

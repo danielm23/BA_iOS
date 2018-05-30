@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import CoreData
 
-class FavoritesModel {
+class FavoritesModel {/*
     
     private var favoriteEvents = Variable<[Favorites]>([])
     private var managedObjectContext : NSManagedObjectContext
@@ -75,5 +75,5 @@ class FavoritesModel {
         } catch {
             fatalError("error delete data")
         }
-    }
+    }*/
 }

@@ -24,9 +24,8 @@ extension Managed {
     }
 }
 
-
 extension Managed where Self: NSManagedObject {
-    static var entityName: String { return entity().name!  }
+    //static var entityName: String { return entity().name!  }
     
     static func fetch(in context: NSManagedObjectContext, configurationBlock: (NSFetchRequest<Self>) -> () = { _ in }) -> [Self] {
         let request = NSFetchRequest<Self>(entityName: Self.entityName)
@@ -44,6 +43,7 @@ extension Managed where Self: NSManagedObject {
     }
     
     static func findOrFetch(in context: NSManagedObjectContext, matching predicate: NSPredicate) -> Self? {
+
         guard let object = materializedObject(in: context, matching: predicate) else {
             return fetch(in: context) { request in
                 request.predicate = predicate

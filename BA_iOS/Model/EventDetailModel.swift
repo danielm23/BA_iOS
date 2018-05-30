@@ -3,7 +3,7 @@ import RxSwift
 import CoreData
 
 class EventDetailModel {
-    
+    /*
     private var favoriteEvents = Variable<[Favorites]>([])
     private var managedObjectContext : NSManagedObjectContext
     
@@ -82,5 +82,5 @@ class EventDetailModel {
     
     func reloadEvents() {
         favoriteEvents.value = fetchData()
-    }
+    }*/
 }

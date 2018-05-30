@@ -6,7 +6,7 @@ import RxCocoa
 class FavoritesController: UIViewController {
     
     @IBOutlet var favoritesTableView: UITableView!
-    
+    /*
     var favoritesViewModel = FavoritesViewModel()
     var disposeBag = DisposeBag()
     
@@ -58,5 +58,5 @@ class FavoritesController: UIViewController {
         destViewController.eventDetailViewModel.isFavorite = destViewController.eventDetailViewModel.eventIsFavorite()
         print(destViewController.eventDetailViewModel.isFavorite)
         self.show(destViewController, sender: nil)
-    }
+    }*/ 
 }

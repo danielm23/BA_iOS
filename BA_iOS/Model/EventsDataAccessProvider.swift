@@ -4,8 +4,8 @@ import CoreData
 
 
 class EventsDataAccessProvider {
-    
-    private var storedEvents = Variable<[PersistantEvent]>([])
+    /*
+    private var storedEvents = Variable<[Event]>([])
     private var managedObjectContext : NSManagedObjectContext
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -14,14 +14,14 @@ class EventsDataAccessProvider {
     
     init(){
         let delegate = UIApplication.shared.delegate as! AppDelegate
-        storedEvents.value = [PersistantEvent]()
+        storedEvents.value = [Event]()
         managedObjectContext = delegate.persistentContainer.viewContext
         
         storedEvents.value = fetchData()
     }
     
-    private func fetchData() -> [PersistantEvent] {
-        let persistantEventFetchRequest = PersistantEvent.createFetchRequest()
+    private func fetchData() -> [Event] {
+        let persistantEventFetchRequest = Event.createFetchRequest()
         let sort = NSSortDescriptor(key: "name", ascending: true)
         persistantEventFetchRequest.sortDescriptors = [sort]
         do {
@@ -37,7 +37,7 @@ class EventsDataAccessProvider {
         storedEvents.value = fetchData()
         return storedEvents.asObservable()
     }
-    
+ 
     func storeNewEvents(loadedEvents: [JsonEvent]) {
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         DispatchQueue.main.async { [unowned self] in
@@ -96,6 +96,6 @@ class EventsDataAccessProvider {
             dispatchGroup.leave()
         }
         dataTask?.resume()
-    }
+    }*/
 }
 

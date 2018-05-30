@@ -12,7 +12,7 @@ import CoreData
 @objc(Favorites)
 public class Favorites: NSManagedObject {
     
-    func configure(event: PersistantEvent, number: Int) {
+    func configure(event: Event, number: Int) {
         self.event = event
         self.number = Int16(number)
         self.created = Date()

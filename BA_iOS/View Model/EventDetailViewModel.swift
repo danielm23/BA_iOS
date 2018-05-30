@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import CoreData
 
-class EventDetailViewModel {
+class EventDetailViewModel {/*
     var event = PersistantEvent()
     var eventDetailModel = EventDetailModel()
     var buttonText = PublishSubject<String>()
@@ -41,5 +41,5 @@ class EventDetailViewModel {
         } else {
             addFavorite(newFavorite: (event), orderNumber: 1)
         }
-    }
+    }*/
 }

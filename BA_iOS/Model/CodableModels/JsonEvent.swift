@@ -3,14 +3,14 @@ import CoreData
 
 public class JsonEvent: Codable {
     var id: Int
-    var name: String
-    var info: String
+    var name: String?
+    var info: String?
     
-    var startDate: Date
-    var endDate: Date
+    var startDate: Date?
+    var endDate: Date?
     
-    var isActive: Bool
-    var isFavorite: Bool
+    var isActive: Bool?
+    var isFavorite: Bool?
     
     var scheduleId: String
     var venueId: Int
@@ -27,4 +27,12 @@ public class JsonEvent: Codable {
         self.scheduleId = scheduleId
         self.venueId = venueId
     }
+}
+
+extension JsonEvent {
+    
+    static let getAll = Resource<[JsonEvent]>(url: "events")
+    
+    //static let scheduleEvents = Resource<[JsonEvent]>(url: "events")
+    
 }

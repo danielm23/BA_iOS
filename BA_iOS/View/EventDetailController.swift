@@ -1,30 +1,123 @@
 import Foundation
 import UIKit
-import RxSwift
-import RxCocoa
+import CoreData
+import MapKit
 
 class EventDetailController: UIViewController {
     
-    @IBOutlet weak var label: UILabel!
-    @IBOutlet weak var button: UIButton!
+    var managedObjectContext: NSManagedObjectContext!
     
-    var eventDetailViewModel = EventDetailViewModel()
-    var disposeBag = DisposeBag()
+    @IBOutlet weak var label: UILabel! //name
+    @IBOutlet weak var venueLabel: UILabel!
+    @IBOutlet weak var eventDetail: UILabel!
+    @IBOutlet weak var timeLabel: UILabel!
     
+    @IBOutlet weak var mapView: MKMapView!
+    
+    var rightItem = UIBarButtonItem()
+    let favoriteButton: UIButton = UIButton(type: .custom)
+
+    //var coordinate : CLLocationCoordinate2D
+    
+    fileprivate var observer: ManagedObjectObserver?
+    
+    
+    
+    @objc var event: Event! {
+        didSet {
+            observer = ManagedObjectObserver(object: event) { [unowned self] type in
+                guard type == .update else { return }
+                //let _ = self.navigationController?.popViewController(animated: true)
+            }
+        }
+    }
+    
+    @IBAction func favoriteButtonPressed(_ sender: Any) {
+        favoriteButton.isSelected = !favoriteButton.isSelected
+        self.managedObjectContext.performChanges {
+            let _ = self.event.switchFavoriteStatus()
+            print("switched status")
+            print(self.event.isFavorite)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        label.text = eventDetailViewModel.event.name
-        setupFavoriteButton()
-        button.setTitle(eventDetailViewModel.getButtonText(), for: .normal)
+        configureButton()
+        configureLabels()
+        loadGeoInfos()
     }
     
-    private func setupFavoriteButton() {
-        button.rx.tap
-            .subscribe(onNext : { [weak self] _ in
-                self?.eventDetailViewModel.configureButton()
-                self?.button.setTitle(self?.eventDetailViewModel.getButtonText(), for: .normal)
-            })
-            .disposed(by: disposeBag)
+    fileprivate func configureLabels() {
+        navigationItem.title = event.schedule?.name
+        label.text = event.name
+        venueLabel.text = event.venue?.name
+        eventDetail.text = event.info
+        
+        let timeFormatter = DateFormatter()
+        let dateFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
+        dateFormatter.dateFormat = "dd.MM.yyyy"
+        timeLabel.text = dateFormatter.string(from: event.startDate!) + "\n" + timeFormatter.string(from: event.startDate!) + " bis " + timeFormatter.string(from: event.endDate!) + "Uhr"
+    }
+    
+    fileprivate func configureButton() {
+        favoriteButton.setImage(UIImage(named: "NoFavorite"), for: .normal)
+        favoriteButton.setImage(UIImage(named: "Favorite"), for: .selected)
+        favoriteButton.addTarget(self, action: #selector(self.favoriteButtonPressed(_:)), for: .touchUpInside)
+        rightItem = UIBarButtonItem(customView: favoriteButton)
+        self.navigationItem.rightBarButtonItem = rightItem
+        
+        if event.isFavorite {
+            favoriteButton.isSelected = true
+        }
+    }
+    
+    fileprivate func updateMapView() {
+        //coordinate.latitude = 50
+        //coordinate.longitude = 8.23
+        
+        guard let map = mapView, let annotation = EventAnnotation(event: event) else { return }
+        map.removeAnnotations(mapView!.annotations)
+        map.addAnnotation(annotation)
+        map.mapType = .hybrid
+        //map.selectAnnotation(annotation, animated: true)
+        map.setCenter(annotation.coordinate, animated: false)
+        map.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 300, 300), animated: false)
+    }
+    
+    func loadGeoInfos() {
+        let dispatchGroup = DispatchGroup()
+        dispatchGroup.enter()
+        Webservice().load(resource: JsonGeoinformation.get(id: (event.venue?.geoinformationId)!)) { geoinformation in
+            self.event.venue?.setGeoinformation(info: geoinformation!)
+            dispatchGroup.leave()
+        }
+        dispatchGroup.enter()
+        Webservice().load(resource: JsonGeolocation.get(of: (event.venue?.geoinformationId)!)) { geolocations in
+            for geolocation in geolocations! {
+                print(geolocation)
+                self.event.venue?.setGeolocation(location: geolocation)
+                dispatchGroup.leave()
+            }
+            dispatchGroup.notify(queue: .main) {
+                print(self.event.venue?.geolocation?.latitude)
+                self.updateMapView()
+            }
+        }
+    }
+}
+
+class EventAnnotation: NSObject, MKAnnotation {
+    var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D()
+    let title: String?
+    
+    fileprivate init?(event: Event) {
+        self.coordinate.longitude = (event.venue?.geolocation?.longitude)!
+        self.coordinate.latitude = (event.venue?.geolocation?.latitude)!
+        //coordinate = mood.location?.coordinate ?? CLLocationCoordinate2D()
+        title = event.venue?.geoinformation?.title
+        super.init()
+        //guard let _ = mood.location, let _ = title else { return nil }
     }
 }

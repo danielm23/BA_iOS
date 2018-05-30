@@ -2,7 +2,7 @@ import Foundation
 import RxSwift
 import CoreData
 
-class FavoritesViewModel {
+class FavoritesViewModel {/*
     
     private var events = Variable<[Favorites]>([])
     private var disposeBag = DisposeBag()
@@ -41,5 +41,5 @@ class FavoritesViewModel {
     
     public func removeFavorite(withIndex index: Int) {
         favoritesModel.removeFavorite(withIndex: index)
-    }
+    }*/
 }

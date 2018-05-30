@@ -3,8 +3,10 @@ PODS:
   - MapboxDirections.swift (0.21.0):
     - Polyline (~> 4.2)
   - Polyline (4.2.0)
-  - Pulley (2.4.0)
   - RxCocoa (4.1.2):
+    - RxSwift (~> 4.0)
+  - RxCoreData (0.4.0):
+    - RxCocoa (~> 4.0)
     - RxSwift (~> 4.0)
   - RxDataSources (3.0.2):
     - Differentiator (~> 3.0)
@@ -14,8 +16,8 @@ PODS:
 
 DEPENDENCIES:
   - MapboxDirections.swift (~> 0.21)
-  - Pulley
   - RxCocoa (~> 4.0)
+  - RxCoreData (~> 0.4.0)
   - RxDataSources (~> 3.0)
   - RxSwift (~> 4.0)
 
@@ -24,8 +26,8 @@ SPEC REPOS:
     - Differentiator
     - MapboxDirections.swift
     - Polyline
-    - Pulley
     - RxCocoa
+    - RxCoreData
     - RxDataSources
     - RxSwift
 
@@ -33,11 +35,11 @@ SPEC CHECKSUMS:
   Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
   MapboxDirections.swift: 14d32d1601834e15c930cbab4201e57b0f7a2218
   Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
-  Pulley: 604066ea5d24339a8701b0167a2c8131a589e705
   RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
+  RxCoreData: 3717ff29afb7261f8cff4b893ffb0650367d0fe6
   RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
   RxSwift: e49536837d9901277638493ea537394d4b55f570
 
-PODFILE CHECKSUM: e8694065a9779dd6a04a7097974d29346a5fa5f6
+PODFILE CHECKSUM: a1edda2f5415208b527e5485a24dc77c277a1e17
 
 COCOAPODS: 1.5.2
