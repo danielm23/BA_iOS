@@ -5,137 +5,113 @@ import Mapbox
 import MapKit
 
 
-class MapController: UIViewController, MGLMapViewDelegate {
-    var current = CLLocationCoordinate2D()
-    var destination = MGLPointAnnotation()
-    //var mapView = MGLMapView()
-    
-    /*
-    let candies = [
-    Candy(category:"Chocolate", name:"Chocolate Bar"),
-    Candy(category:"Chocolate", name:"Chocolate Chip"),
-    Candy(category:"Chocolate", name:"Dark Chocolate"),
-    Candy(category:"Hard", name:"Lollipop"),
-    Candy(category:"Hard", name:"Candy Cane"),
-    Candy(category:"Hard", name:"Jaw Breaker"),
-    Candy(category:"Other", name:"Caramel"),
-    Candy(category:"Other", name:"Sour Chew"),
-    Candy(category:"Other", name:"Gummi Bear"),
-    Candy(category:"Other", name:"Candy Floss"),
-    Candy(category:"Chocolate", name:"Chocolate Coin"),
-    Candy(category:"Chocolate", name:"Chocolate Egg"),
-    Candy(category:"Other", name:"Jelly Beans"),
-    Candy(category:"Other", name:"Liquorice"),
-    Candy(category:"Hard", name:"Toffee Apple")
-    ]*/
+class MapController: UIViewController  {
     
     
+    fileprivate var observer: ManagedObjectObserver?
     
+    var event: Event?
+    var locationManager: CLLocationManager?
+    var startLocation: CLLocation?
+    //var location: CLLocation!
     var resultSearchController = UISearchController(searchResultsController: nil)
     
-    @IBOutlet weak var mapView: MGLMapView!
+    @IBOutlet weak var mapView: MKMapView!
+    
+    @IBAction func navigationButton(_ sender: Any) {
+        print(locationManager?.location)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //mapView = MGLMapView(frame: view.bounds)
-        mapView.delegate = self
+        locationManager = CLLocationManager()
+        locationManager?.delegate = self
+        locationManager?.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager?.requestWhenInUseAuthorization()
         
-        mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        mapView.showsUserLocation = true
-        mapView.setUserTrackingMode(.follow, animated: false)
-
-        view.addSubview(mapView)
-
-        configureDestination(latitude: 49.9, longitude: 8.23)
-        
-        mapView.addAnnotation(destination)
-        
-        resultSearchController.searchResultsUpdater = self
-        resultSearchController.obscuresBackgroundDuringPresentation = false
-        resultSearchController.searchBar.placeholder = "Search"
-        
-        let locationSearchTable = storyboard!.instantiateViewController(withIdentifier: "LocationSearchController") as! LocationSearchController
-        resultSearchController = UISearchController(searchResultsController: locationSearchTable)
-        resultSearchController.searchResultsUpdater = locationSearchTable
-        resultSearchController.hidesNavigationBarDuringPresentation = false
-        resultSearchController.dimsBackgroundDuringPresentation = true
-        
-        navigationItem.title = "Locations"
-        navigationItem.hidesSearchBarWhenScrolling = false
-        navigationItem.searchController = resultSearchController
-        navigationItem.hidesSearchBarWhenScrolling = true
-        definesPresentationContext = true
+        guard let map = mapView, let annotation = EventAnnotation(event: event!) else { return }
+        map.delegate = self
+        map.removeAnnotations(mapView!.annotations)
+        map.addAnnotation(annotation)
+        map.mapType = .hybrid
+        map.setCenter(annotation.coordinate, animated: false)
+        map.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 800, 800), animated: true)
     }
     
-    func configureDestination(latitude: Double, longitude: Double) {
-        destination.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        destination.title = "Destination"
-        destination.subtitle = "your destination"
-    }
+    func startNavigation() {
         
-    func displayRoute () {
+        let sourcePlacemark = MKPlacemark(coordinate: (locationManager?.location?.coordinate)!, addressDictionary: nil)
         
-        let directions = Directions.shared
+        let destinationLocation = CLLocation(latitude: (event?.venue?.geolocation?.latitude)!, longitude: (event?.venue?.geolocation?.longitude)!)
 
-        let waypoints = [
-            Waypoint(coordinate: destination.coordinate, name: "Start"),
-            Waypoint(coordinate: current, name: "Ziel"),
-            ]
+        let destinationPlacemark = MKPlacemark(coordinate: destinationLocation.coordinate, addressDictionary: nil)
         
-        let options = RouteOptions(waypoints: waypoints, profileIdentifier: .walking)
-        options.includesSteps = false
+        let request = MKDirectionsRequest()
+        request.source = MKMapItem(placemark: sourcePlacemark)
+        request.destination = MKMapItem(placemark: destinationPlacemark)
+        request.requestsAlternateRoutes = false
+        request.transportType = .walking
         
-        let task = directions.calculate(options) { (waypoints, routes, error) in
-            guard error == nil else {
-                print("Error calculating directions: \(error!)")
-                return
-            }
-            
-            if let route = routes?.first, let leg = route.legs.first {
-                print("Route via \(leg):")
-                
-                let distanceFormatter = LengthFormatter()
-                let formattedDistance = distanceFormatter.string(fromMeters: route.distance)
-                
-                let travelTimeFormatter = DateComponentsFormatter()
-                travelTimeFormatter.unitsStyle = .short
-                let formattedTravelTime = travelTimeFormatter.string(from: route.expectedTravelTime)
-                
-                print("Distance: \(formattedDistance); ETA: \(formattedTravelTime!)")
-                
-                if route.coordinateCount > 0 {
-                    // Convert the route’s coordinates into a polyline.
-                    var routeCoordinates = route.coordinates!
-                    let routeLine = MGLPolyline(coordinates: &routeCoordinates, count: route.coordinateCount)
-                    
-                    // Add the polyline to the map and fit the viewport to the polyline.
-                    self.mapView.addAnnotation(routeLine)
-                    self.mapView.setVisibleCoordinates(&routeCoordinates, count: route.coordinateCount, edgePadding: .zero, animated: true)
+        let directions = MKDirections(request: request)
+        
+        directions.calculate {
+            [weak self] (response, error) in
+            if error == nil {
+                let route = response!.routes.first
+                self?.mapView.add((route?.polyline)!)
+                for step in (route?.steps)! {
+                    print(step.instructions)
                 }
             }
         }
     }
-    
-    func mapView(_ mapView: MGLMapView, didUpdate userLocation: MGLUserLocation?) {
-        print("updated location")
-        current = (mapView.userLocation?.coordinate)!
-        print(current)
-        displayRoute()
-    }
+}
 
-    func mapView(_ mapView: MGLMapView, viewFor annotation: MGLAnnotation) -> MGLAnnotationView? {
-        return nil
+extension MapController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if startLocation == nil {
+            startLocation = locations.first
+        } else {
+            guard let latest = locations.first else { return }
+            let distanceInMeters = startLocation?.distance(from: latest)
+            print("distance in meters: \(distanceInMeters)")
+        }
     }
     
-    func mapView(_ mapView: MGLMapView, annotationCanShowCallout annotation: MGLAnnotation) -> Bool {
-        return true
+    fileprivate func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager?.startUpdatingLocation()
+        }
     }
 }
 
+extension MapController: MKMapViewDelegate {
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.strokeColor = UIColor.blue
+        renderer.lineWidth = 4.5
+        return renderer
+    }
+}
+/*
 extension MapController: UISearchResultsUpdating {
     // MARK: - UISearchResultsUpdating Delegate
     func updateSearchResults(for searchController: UISearchController) {
         // TODO
+    }
+}
+*/
+public class EventAnnotation: NSObject, MKAnnotation {
+    public var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D()
+    public let title: String?
+    
+    init?(event: Event) {
+        self.coordinate.longitude = (event.venue?.geolocation?.longitude)!
+        self.coordinate.latitude = (event.venue?.geolocation?.latitude)!
+        title = event.venue?.geoinformation?.title
+        super.init()
     }
 }

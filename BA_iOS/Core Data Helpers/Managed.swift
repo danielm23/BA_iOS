@@ -2,13 +2,13 @@
 import CoreData
 
 
-protocol Managed: class, NSFetchRequestResult {
+ protocol Managed: class, NSFetchRequestResult {
     static var entityName: String { get }
     static var defaultSortDescriptors: [NSSortDescriptor] { get }
 }
 
 
-extension Managed {
+ extension Managed {
     static  var defaultSortDescriptors: [NSSortDescriptor] { return [] }
     
     static var sortedFetchRequest: NSFetchRequest<Self> {
@@ -24,7 +24,7 @@ extension Managed {
     }
 }
 
-extension Managed where Self: NSManagedObject {
+ extension Managed where Self: NSManagedObject {
     //static var entityName: String { return entity().name!  }
     
     static func fetch(in context: NSManagedObjectContext, configurationBlock: (NSFetchRequest<Self>) -> () = { _ in }) -> [Self] {

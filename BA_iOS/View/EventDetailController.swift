@@ -3,7 +3,7 @@ import UIKit
 import CoreData
 import MapKit
 
-class EventDetailController: UIViewController {
+class EventDetailController: UIViewController, SegueHandler {
     
     var managedObjectContext: NSManagedObjectContext!
     
@@ -11,17 +11,20 @@ class EventDetailController: UIViewController {
     @IBOutlet weak var venueLabel: UILabel!
     @IBOutlet weak var eventDetail: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
-    
     @IBOutlet weak var mapView: MKMapView!
     
     var rightItem = UIBarButtonItem()
     let favoriteButton: UIButton = UIButton(type: .custom)
+    
+    enum SegueIdentifier: String {
+        case showMap = "showMap"
+    }
 
-    //var coordinate : CLLocationCoordinate2D
+    @IBAction func NavigationButtonPressed(_ sender: UIButton) {
+        print("nav")
+    }
     
     fileprivate var observer: ManagedObjectObserver?
-    
-    
     
     @objc var event: Event! {
         didSet {
@@ -101,23 +104,19 @@ class EventDetailController: UIViewController {
                 dispatchGroup.leave()
             }
             dispatchGroup.notify(queue: .main) {
-                print(self.event.venue?.geolocation?.latitude)
+                print(self.event.venue?.geolocation)
                 self.updateMapView()
             }
         }
     }
-}
-
-class EventAnnotation: NSObject, MKAnnotation {
-    var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D()
-    let title: String?
     
-    fileprivate init?(event: Event) {
-        self.coordinate.longitude = (event.venue?.geolocation?.longitude)!
-        self.coordinate.latitude = (event.venue?.geolocation?.latitude)!
-        //coordinate = mood.location?.coordinate ?? CLLocationCoordinate2D()
-        title = event.venue?.geoinformation?.title
-        super.init()
-        //guard let _ = mood.location, let _ = title else { return nil }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        switch segueIdentifier(for: segue) {
+        case .showMap:
+            //guard let event = event else { fatalError("Showing detail, but no selected row?")
+            let mapVc = segue.destination as! MapController
+            mapVc.event = event
+        }
     }
 }

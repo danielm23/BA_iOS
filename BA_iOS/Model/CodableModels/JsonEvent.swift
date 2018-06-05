@@ -31,7 +31,7 @@ public class JsonEvent: Codable {
 
 extension JsonEvent {
     
-    static let getAll = Resource<[JsonEvent]>(url: "events")
+    //static let getAll = Resource<[JsonEvent]>(url: "events")
     
     //static let scheduleEvents = Resource<[JsonEvent]>(url: "events")
     

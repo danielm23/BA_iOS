@@ -38,6 +38,7 @@ class EventsController: UIViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(tabBarController?.selectedIndex)
         activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
         setupTableView()
@@ -87,7 +88,6 @@ class EventsController: UIViewController, SegueHandler {
             for venue in venues! {
                 self.managedObjectContext.performChanges {
                     let _ = Venue.insert(into: self.managedObjectContext, json: venue)
-                    print(venue.name)
                 }
             }
             dispatchGroup.leave()
@@ -138,6 +138,4 @@ extension EventsController: TableViewDataSourceDelegate {
     func configure(_ cell: EventTableViewCell, for object: Event) {
             cell.configure(for: object)
     }
-    
-    
 }
