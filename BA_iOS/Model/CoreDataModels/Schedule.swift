@@ -20,31 +20,20 @@ public class Schedule: NSManagedObject {
     // relationships
     @NSManaged fileprivate(set) var events: Set<Event>?
     @NSManaged fileprivate(set) var venues: Set<Venue>?
-    
-    public static func insert(into context: NSManagedObjectContext, json: JsonSchedule) -> Schedule {
-        let schedule: Schedule = context.insertObject()
-        
-        schedule.id = json.id
-        schedule.name = json.name
-        schedule.info = json.info
-        schedule.version = 1
-        schedule.isActive = true
-        schedule.startDate = json.startDate
-        schedule.endDate = json.endDate
-        //schedule.events = Event.findOrCreate(for: json.scheduleId, in: context)
-        //schedule.venues = Venue.findOrCreate(for: json.venueId, in: context)
-        
-        return schedule
-    }
-    
+    @NSManaged fileprivate(set) var messages: Set<Message>?
+    @NSManaged fileprivate(set) var categories: Set<Category>?
+    @NSManaged fileprivate(set) var tracks: Set<Track>?
+
+
+
+    /*
     static func findOrCreate(for scheduleId: String, in context: NSManagedObjectContext) -> Schedule {
         let predicate = NSPredicate(format: "%K == %@", #keyPath(id), scheduleId)
         let schedule = findOrCreate(in: context, matching: predicate) {
             $0.id = scheduleId
-            //$0.continent = Continent.findOrCreateContinent(for: isoCountry, in: context)
         }
         return schedule
-    }
+    }*/
     
     public func setActive() {
         isActive = !isActive
@@ -60,11 +49,32 @@ extension Schedule: Managed {
     static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(key: #keyPath(startDate), ascending: false)]
     }
+    
+    static func insert(into context: NSManagedObjectContext, json: JsonSchedule) -> Schedule {
+        let schedule: Schedule = context.insertObject()
+        
+        schedule.id = json.id
+        schedule.name = json.name
+        schedule.info = json.info
+        schedule.version = 1
+        schedule.isActive = true
+        schedule.startDate = json.startDate
+        schedule.endDate = json.endDate
+        //schedule.events = Event.findOrCreate(for: json.scheduleId, in: context)
+        //schedule.venues = Venue.findOrCreate(for: json.venueId, in: context)
+        
+        return schedule
+    }
 }
 
-
-
-
-
-
-
+extension Schedule {
+    static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
+        config.group.enter()
+        Webservice().load(resource: JsonSchedule.get(scheduleId), session: config.session) { schedule in
+            config.context.performChanges {
+                let _ = Schedule.insert(into: config.context, json: schedule!)
+            }
+            config.group.leave()
+        }
+    }
+}

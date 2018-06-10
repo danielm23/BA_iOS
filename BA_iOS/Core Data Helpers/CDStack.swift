@@ -8,5 +8,3 @@ func createCDContainer(completion: @escaping (NSPersistentContainer) -> ()) {
         DispatchQueue.main.async { completion(container) }
     }
 }
-
-

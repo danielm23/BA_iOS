@@ -4,12 +4,21 @@ import CoreData
 class SchedulesController: UITableViewController {
 
     var managedObjectContext: NSManagedObjectContext!
+    var rightItem = UIBarButtonItem()
+    let favoriteButton: UIButton = UIButton(type: .custom)
+    
+    @IBAction func infoButtonPressed(_ sender: Any) {
+        print("pressed")
+        let destViewController = storyboard?.instantiateViewController(withIdentifier: "InformationController") as! InformationController
+        destViewController.managedObjectContext = managedObjectContext
+        self.show(destViewController, sender: nil)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
+        configureButton()
     }
-    
     
     fileprivate var dataSource: TableViewDataSource<SchedulesController>!
     
@@ -19,9 +28,16 @@ class SchedulesController: UITableViewController {
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
         let schedules = try! managedObjectContext.fetch(request)
-        print(schedules)
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         dataSource = TableViewDataSource(tableView: tableView, cellIdentifier: "ScheduleCell", fetchedResultsController: frc, delegate: self)
+    }
+    
+    fileprivate func configureButton() {
+        favoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
+        favoriteButton.addTarget(self, action: #selector(self.infoButtonPressed(_:)), for: .touchUpInside)
+        rightItem = UIBarButtonItem(customView: favoriteButton)
+        self.navigationItem.rightBarButtonItem = rightItem
+        print("set button")
     }
 }
 

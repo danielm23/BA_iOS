@@ -13,7 +13,7 @@ final public class JsonGeolocation: Codable {
     var updated: Date?
     var userId: Int?
     
-    init(
+    /*init(
         adress: String,
         zip: String,
         city: String,
@@ -32,7 +32,7 @@ final public class JsonGeolocation: Codable {
         self.latitude = latitude
         self.floor = floor
         self.created = Date()
-    }
+    }*/
 }
 
 extension JsonGeolocation {

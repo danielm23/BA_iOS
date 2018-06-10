@@ -1,5 +1,5 @@
-import CoreData
-/*
+/*import CoreData
+
 public protocol CoreDataDecodable: Decodable, Managed {
     associatedtype DTO: Decodable
     

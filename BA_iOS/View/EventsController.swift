@@ -38,14 +38,12 @@ class EventsController: UIViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(tabBarController?.selectedIndex)
         activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
+        predicates = [activeSchedules] as! [NSPredicate]
         setupTableView()
     }
 
-
-    
     fileprivate func setupTableView() {
         var request = NSFetchRequest<Event>()
         schedulePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
@@ -56,56 +54,33 @@ class EventsController: UIViewController, SegueHandler {
         dataSource = TableViewDataSource(tableView: eventsTableView, cellIdentifier: "Cell", fetchedResultsController: frc, delegate: self)
     }
     
-    /*fileprivate func updateDataSource() {
-        dataSource.reconfigureFetchRequest { request in
-            //let regionType = filterSegmentedControl.regionType
-            //request.entity = regionType.entity
-            //request.sortDescriptors = regionType.defaultSortDescriptors
-        }
-    }*/
     
     override func viewDidAppear(_ animated: Bool) {
+        print("did appear")
         setupTableView()
     }
     
-    func loadEventsOfSchedule(qrcode: String) {
+    func loadEntities(ofScheudle id: String) {
         
-        // ALLWAYS USE TUNNEL
+        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
         
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
-        Webservice().load(resource: JsonSchedule.get(id: qrcode)) { schedule in
-            self.managedObjectContext.performChanges {
-                let _ = Schedule.insert(into: self.managedObjectContext, json: schedule!)
-                print("inserted schedule " + (schedule?.name)!)
-            }
-            dispatchGroup.leave()
+        let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
+        print("before schedule")
+        Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after schedule")
+        Venue.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after venue")
+        Track.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after track")
+        Message.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after message")
+        Category.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after categories")
+        loadConfig.group.notify(queue: .main) {
+            print("before events")
+            Event.loadAndStore(identifiedBy: id, config: loadConfig)
+            print("after events")
         }
-        
-        dispatchGroup.enter()
-        print("inserted venues: ")
-        Webservice().load(resource: JsonSchedule.getVenues(of: qrcode)) { venues in
-            for venue in venues! {
-                self.managedObjectContext.performChanges {
-                    let _ = Venue.insert(into: self.managedObjectContext, json: venue)
-                }
-            }
-            dispatchGroup.leave()
-        }
-        
-        print(" ")
-        print("inserted events: ")
-        dispatchGroup.notify(queue: .main) {
-            Webservice().load(resource: JsonSchedule.getEvents(of: qrcode)) { events in
-                for event in events! {
-                    self.managedObjectContext.performChanges {
-                        let _ = Event.insert(into: self.managedObjectContext, json: event)
-                        print(event.name ?? "no name")
-                    }
-                }
-            }
-        }
-        print(" ")
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -125,12 +100,9 @@ class EventsController: UIViewController, SegueHandler {
     }
     
     @IBAction func unwind(_ seque: UIStoryboardSegue) {
-        let dispatchGroup = DispatchGroup()
         if let sourceVC = seque.source as? ScannerController {
-            dispatchGroup.enter()
-            loadEventsOfSchedule(qrcode: sourceVC.qrCode!)
+            loadEntities(ofScheudle: sourceVC.qrCode!)
         }
-
     }
 }
 
@@ -138,4 +110,10 @@ extension EventsController: TableViewDataSourceDelegate {
     func configure(_ cell: EventTableViewCell, for object: Event) {
             cell.configure(for: object)
     }
+}
+
+struct loadAndStoreConfiguration {
+    let context: NSManagedObjectContext
+    let group = DispatchGroup()
+    let session = URLSession.shared
 }

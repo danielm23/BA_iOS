@@ -1,12 +1,16 @@
-
 import CoreData
 
-
- protocol Managed: class, NSFetchRequestResult {
+ protocol Managed: NSFetchRequestResult {
     static var entityName: String { get }
     static var defaultSortDescriptors: [NSSortDescriptor] { get }
+    
+    associatedtype Input: Decodable
+    associatedtype Output: Managed
+    associatedtype Identifier
+    
+    static func insert(into context: NSManagedObjectContext, json: Input) -> Output
+    static func loadAndStore(identifiedBy id: Identifier, config: LoadAndStoreConfiguration)
 }
-
 
  extension Managed {
     static  var defaultSortDescriptors: [NSSortDescriptor] { return [] }
@@ -24,8 +28,18 @@ import CoreData
     }
 }
 
- extension Managed where Self: NSManagedObject {
-    //static var entityName: String { return entity().name!  }
+extension Managed where Self: NSManagedObject {
+    
+    static var entityName: String { return entity().name!  }
+
+
+    static func FindOrLoad(in context: NSManagedObjectContext, matching predicate: NSPredicate, load: () -> (Self)) -> Self {
+        guard let object = findOrFetch(in: context, matching: predicate) else {
+            let newObject = load()
+            return newObject
+        }
+        return object
+    }
     
     static func fetch(in context: NSManagedObjectContext, configurationBlock: (NSFetchRequest<Self>) -> () = { _ in }) -> [Self] {
         let request = NSFetchRequest<Self>(entityName: Self.entityName)
@@ -33,17 +47,7 @@ import CoreData
         return try! context.fetch(request)
     }
     
-    static func findOrCreate(in context: NSManagedObjectContext, matching predicate: NSPredicate, configure: (Self) -> ()) -> Self {
-        guard let object = findOrFetch(in: context, matching: predicate) else {
-            let newObject: Self = context.insertObject()
-            configure(newObject)
-            return newObject
-        }
-        return object
-    }
-    
     static func findOrFetch(in context: NSManagedObjectContext, matching predicate: NSPredicate) -> Self? {
-
         guard let object = materializedObject(in: context, matching: predicate) else {
             return fetch(in: context) { request in
                 request.predicate = predicate
@@ -63,3 +67,8 @@ import CoreData
     }
 }
 
+struct LoadAndStoreConfiguration {
+    let context: NSManagedObjectContext
+    let group = DispatchGroup()
+    let session = URLSession.shared
+}

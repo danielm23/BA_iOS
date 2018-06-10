@@ -1,7 +1,5 @@
 import Foundation
 import UIKit
-import MapboxDirections
-import Mapbox
 import MapKit
 
 
@@ -20,6 +18,7 @@ class MapController: UIViewController  {
     
     @IBAction func navigationButton(_ sender: Any) {
         print(locationManager?.location)
+        startNavigation()
     }
     
     override func viewDidLoad() {

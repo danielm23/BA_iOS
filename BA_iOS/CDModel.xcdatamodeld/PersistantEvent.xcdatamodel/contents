@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14133" systemVersion="17E202" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17F77" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Category" representedClassName="Category" syncable="YES">
+        <attribute name="color" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="categories" inverseEntity="Event" syncable="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="categories" inverseEntity="Schedule" syncable="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <entity name="Event" representedClassName="Event" syncable="YES">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
@@ -8,7 +20,9 @@
         <attribute name="isFavorite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="startDate" attributeType="Date" usesScalarValueType="NO" spotlightIndexingEnabled="YES" syncable="YES"/>
+        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="events" inverseEntity="Category" syncable="YES"/>
         <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="events" inverseEntity="Schedule" syncable="YES"/>
+        <relationship name="track" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Track" inverseName="events" inverseEntity="Track" syncable="YES"/>
         <relationship name="venue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Venue" inverseName="events" inverseEntity="Venue" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -16,10 +30,17 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="Favorites" representedClassName="Favorites" syncable="YES">
-        <attribute name="created" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
-        <attribute name="number" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" syncable="YES"/>
+    <entity name="Message" representedClassName="Message" syncable="YES">
+        <attribute name="content" attributeType="String" syncable="YES"/>
+        <attribute name="created" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="messages" inverseEntity="Schedule" syncable="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="Schedule" representedClassName="Schedule" syncable="YES">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -29,8 +50,22 @@
         <attribute name="name" attributeType="String" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="version" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="schedule" inverseEntity="Category" syncable="YES"/>
         <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="schedule" inverseEntity="Event" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="schedule" inverseEntity="Message" syncable="YES"/>
+        <relationship name="tracks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Track" inverseName="schedule" inverseEntity="Track" syncable="YES"/>
         <relationship name="venues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Venue" inverseName="schedule" inverseEntity="Venue" syncable="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="Track" representedClassName="Track" syncable="YES">
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="track" inverseEntity="Event" syncable="YES"/>
+        <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="tracks" inverseEntity="Schedule" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -50,9 +85,11 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Event" positionX="-144" positionY="3837" width="128" height="180"/>
-        <element name="Favorites" positionX="-335" positionY="3861" width="128" height="90"/>
-        <element name="Schedule" positionX="-378" positionY="4122" width="128" height="180"/>
+        <element name="Event" positionX="-144" positionY="3837" width="128" height="210"/>
+        <element name="Message" positionX="-432" positionY="3996" width="128" height="30"/>
+        <element name="Schedule" positionX="-378" positionY="4122" width="128" height="225"/>
+        <element name="Track" positionX="-441" positionY="3987" width="128" height="105"/>
         <element name="Venue" positionX="-648" positionY="3993" width="128" height="120"/>
+        <element name="Category" positionX="-441" positionY="3987" width="128" height="30"/>
     </elements>
 </model>

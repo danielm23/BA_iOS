@@ -1,45 +1,16 @@
 PODS:
-  - Differentiator (3.0.2)
-  - MapboxDirections.swift (0.21.0):
-    - Polyline (~> 4.2)
-  - Polyline (4.2.0)
-  - RxCocoa (4.1.2):
-    - RxSwift (~> 4.0)
-  - RxCoreData (0.4.0):
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
-  - RxDataSources (3.0.2):
-    - Differentiator (~> 3.0)
-    - RxCocoa (~> 4.0)
-    - RxSwift (~> 4.0)
-  - RxSwift (4.1.2)
+  - Down (0.5.2)
 
 DEPENDENCIES:
-  - MapboxDirections.swift (~> 0.21)
-  - RxCocoa (~> 4.0)
-  - RxCoreData (~> 0.4.0)
-  - RxDataSources (~> 3.0)
-  - RxSwift (~> 4.0)
+  - Down
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - Differentiator
-    - MapboxDirections.swift
-    - Polyline
-    - RxCocoa
-    - RxCoreData
-    - RxDataSources
-    - RxSwift
+    - Down
 
 SPEC CHECKSUMS:
-  Differentiator: a87be69eba49ec4ab460c7671143ee3a9eececfd
-  MapboxDirections.swift: 14d32d1601834e15c930cbab4201e57b0f7a2218
-  Polyline: 3d69f75bb136357e27291d439d0436c6ebda57a4
-  RxCocoa: d88ba0f1f6abf040011a9eb4b539324fc426843a
-  RxCoreData: 3717ff29afb7261f8cff4b893ffb0650367d0fe6
-  RxDataSources: cb7c31e652a87ebb919da45f716bbb87b3765f6b
-  RxSwift: e49536837d9901277638493ea537394d4b55f570
+  Down: 587371ad58002b06023d9c602519216862c3acbc
 
-PODFILE CHECKSUM: a1edda2f5415208b527e5485a24dc77c277a1e17
+PODFILE CHECKSUM: ec7f35c7ba231d0d9a8342c719d2457195b01c40
 
-COCOAPODS: 1.5.2
+COCOAPODS: 1.5.3

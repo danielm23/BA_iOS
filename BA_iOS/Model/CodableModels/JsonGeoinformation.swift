@@ -11,7 +11,7 @@ final public class JsonGeoinformation: Codable {
     var userId: Int?
     var parent: Int?
     
-    init(id: Int? = nil,
+    /*init(id: Int? = nil,
          title: String,
          shortinformation: String?,
          detailinformation: String?,
@@ -28,7 +28,7 @@ final public class JsonGeoinformation: Codable {
         self.updated = Date()
         self.userId = 1
         self.parent = parent
-    }
+    }*/
 }
 
 extension JsonGeoinformation {

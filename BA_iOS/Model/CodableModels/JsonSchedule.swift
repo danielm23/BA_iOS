@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 public class JsonSchedule: Codable {
     
@@ -13,13 +12,8 @@ public class JsonSchedule: Codable {
     var isPublic: Bool?
     var version: Int?
     
-    init(id: String,
-         name: String,
-         info: String,
-         startDate: Date,
-         endDate: Date,
-         isPublic: Bool,
-         version: Int) {
+    init(id: String, name: String, info: String, startDate: Date,
+         endDate: Date, isPublic: Bool, version: Int) {
         
         self.id = id
         self.name = name
@@ -33,7 +27,7 @@ public class JsonSchedule: Codable {
 
 extension JsonSchedule {
     
-    static func get(id: String) -> Resource<JsonSchedule> {
+    static func get(_ id: String) -> Resource<JsonSchedule> {
         return Resource<JsonSchedule>(url: "schedules/\(id)")
     }
     
@@ -41,15 +35,19 @@ extension JsonSchedule {
         return Resource<[JsonVenue]>(url: "schedules/\(schedule)/venues")
     }
     
-    func getVenues() -> Resource<[JsonVenue]> {
-        return Resource<[JsonVenue]>(url: "schedules/\(id)/venues")
-    }
-    
     static func getEvents(of schedule: String) -> Resource<[JsonEvent]> {
         return Resource<[JsonEvent]>(url: "schedules/\(schedule)/events")
     }
     
-    func getEvents() -> Resource<[JsonEvent]> {
-        return Resource<[JsonEvent]>(url: "schedules/\(id)/events")
+    static func getTracks(of schedule: String) -> Resource<[JsonTrack]> {
+        return Resource<[JsonTrack]>(url: "schedules/\(schedule)/tracks")
+    }
+    
+    static func getMessages(of schedule: String) -> Resource<[JsonMessage]> {
+        return Resource<[JsonMessage]>(url: "schedules/\(schedule)/messages")
+    }
+    
+    static func getCategories(of schedule: String) -> Resource<[JsonCategory]> {
+        return Resource<[JsonCategory]>(url: "schedules/\(schedule)/categories")
     }
 }

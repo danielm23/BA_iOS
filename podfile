@@ -3,9 +3,5 @@ use_frameworks!
 workspace 'BA_iOS'
 
 target 'BA_iOS' do
-    pod 'RxSwift',    '~> 4.0'
-    pod 'RxCocoa',    '~> 4.0'
-    pod 'RxDataSources', '~> 3.0'
-    pod "RxCoreData", "~> 0.4.0"
-    pod 'MapboxDirections.swift', '~> 0.21'
+    pod 'Down'
 end

@@ -14,7 +14,7 @@ extension Resource where A: Decodable {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         
-        self.url = Webservice.BASEURL.appendingPathComponent(url)
+        self.url = Webservice.baseUrl.appendingPathComponent(url)
         self.parse = { try? decoder.decode(A.self, from: $0) }
     }
 }
@@ -22,17 +22,17 @@ extension Resource where A: Decodable {
 
 final class Webservice {
     
-    public static let BASEURL = URL(string: "https://danielmueller.fwd.wf/api")!
+    public static let baseUrl = URL(string: "https://danielmueller.fwd.wf/api")!
 
-    // modify to get SEESSION.SHARED as argument
-    func load<A>(resource: Resource<A>, completion: @escaping (A?) -> ()) {
-        URLSession.shared.dataTask(with: resource.url) { data, _, _ in
-            guard let data = data else {
+    func load<A>(resource: Resource<A>, session: URLSession, completion: @escaping (A?) -> ()) {
+        session.dataTask(with: resource.url) { data, _, _ in
+            guard let data = data
+                else {
                 completion(nil)
+                print("Error")
                 return
             }
             completion(resource.parse(data))
             }.resume()
     }
 }
-

@@ -1,5 +1,4 @@
 import Foundation
-import CoreData
 
 public class JsonVenue: Codable {
     var id: Int32

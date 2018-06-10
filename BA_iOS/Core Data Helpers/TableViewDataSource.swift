@@ -40,6 +40,8 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     }
     
     func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
+        
+        
         return fetchedResultsController.object(at: indexPath)
     }
     
@@ -106,10 +108,11 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     
     func configureSection(for date: String) -> String{
         var output = date
+        print(date)
         if fetchedResultsController.sectionNameKeyPath == "startDate" {
             let inputFormatter = DateFormatter()
-            inputFormatter.dateFormat = "yyyy-MM-dd hh:mm:ss +zzzz"
-            //inputFormatter.locale = Locale.init(identifier: "de_DE")
+            inputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss +zzzz"
+            inputFormatter.locale = Locale.init(identifier: "de_DE")
             let dateObj = inputFormatter.date(from: date)
             let timeFormatter = DateFormatter()
             let dateFormatter = DateFormatter()

@@ -20,27 +20,8 @@ public class Event: NSManagedObject {
     // relationships
     @NSManaged public fileprivate(set) var schedule: Schedule?
     @NSManaged fileprivate(set) var venue: Venue?
-    
-    
-    public static func insert(into context: NSManagedObjectContext, json: JsonEvent) -> Event {
-        let event: Event = context.insertObject()
-        
-        event.id = Int32(json.id)
-        event.info = json.info
-        event.name = json.name
-        event.isActive = true
-        event.isFavorite = true
-        event.startDate = json.startDate
-        event.endDate = json.endDate
-        
-        let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
-        event.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
-        
-        let venuePredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.venueId)
-        event.venue = Venue.findOrFetch(in: context, matching: venuePredicate)
-        
-        return event
-    }
+    @NSManaged fileprivate(set) var track: Track?
+    @NSManaged fileprivate(set) var categories: Set<Category>?
 
     public func switchFavoriteStatus() {
         isFavorite = !isFavorite
@@ -48,6 +29,7 @@ public class Event: NSManagedObject {
 }
 
 extension Event: Managed {
+
     static var entityName: String {
         return "Event"
     }
@@ -55,5 +37,58 @@ extension Event: Managed {
     static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(key: #keyPath(startDate), ascending: true)]
     }
-}
+    
+    internal static func insert(into context: NSManagedObjectContext, json: JsonEvent) -> Event {
+        let event: Event = context.insertObject()
+        
+        event.id = json.id!
+        event.info = json.info
+        event.name = json.name
+        event.isActive = true
+        event.isFavorite = false
+        event.startDate = json.startDate
+        event.endDate = json.endDate
+        
+        let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
+        event.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
+        
+        if (json.venueId != nil){
+            print("set venue")
+            let venuePredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.venueId!)
+            event.venue = Venue.findOrFetch(in: context, matching: venuePredicate)
+            print(event.venue?.name)
+        }
+        
+        if (json.trackId != nil) {
+            print("set track")
+            let trackPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.trackId!)
+            event.track = Track.findOrFetch(in: context, matching: trackPredicate)
+            print(event.track?.title)
+        }
+        
+        // set categories
+        let config = LoadAndStoreConfiguration(context: context)
 
+        Webservice().load(resource: JsonEvent.getCategories(of: event.id), session: config.session) { categories in for category in categories! {
+                //print(category.id)
+                let categoryPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), category.id)
+                let newCategory = Category.findOrFetch(in: context, matching: categoryPredicate)
+                print("new category: ")
+                print(newCategory)
+                let x = event.categories?.insert(newCategory!)
+                print(x)
+            }
+        }
+        return event
+    }
+    
+    static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
+        Webservice().load(resource: JsonSchedule.getEvents(of: scheduleId), session: config.session) { events in
+            for event in events! {
+                config.context.performChanges {
+                    let _ = Event.insert(into: config.context, json: event)
+                }
+            }
+        }
+    }
+}

@@ -90,21 +90,19 @@ class EventDetailController: UIViewController, SegueHandler {
     }
     
     func loadGeoInfos() {
-        let dispatchGroup = DispatchGroup()
-        dispatchGroup.enter()
-        Webservice().load(resource: JsonGeoinformation.get(id: (event.venue?.geoinformationId)!)) { geoinformation in
+        let config = LoadAndStoreConfiguration(context: managedObjectContext)
+        config.group.enter()
+        Webservice().load(resource: JsonGeoinformation.get(id: (event.venue?.geoinformationId)!), session: config.session) { geoinformation in
             self.event.venue?.setGeoinformation(info: geoinformation!)
-            dispatchGroup.leave()
+            config.group.leave()
         }
-        dispatchGroup.enter()
-        Webservice().load(resource: JsonGeolocation.get(of: (event.venue?.geoinformationId)!)) { geolocations in
+        config.group.enter()
+        Webservice().load(resource: JsonGeolocation.get(of: (event.venue?.geoinformationId)!), session: config.session) { geolocations in
             for geolocation in geolocations! {
-                print(geolocation)
                 self.event.venue?.setGeolocation(location: geolocation)
-                dispatchGroup.leave()
+                config.group.leave()
             }
-            dispatchGroup.notify(queue: .main) {
-                print(self.event.venue?.geolocation)
+            config.group.notify(queue: .main) {
                 self.updateMapView()
             }
         }
