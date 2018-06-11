@@ -38,6 +38,12 @@ class EventsController: UIViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("set moc1")
+        if managedObjectContext == nil {
+            managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
+        }
+        print("set moc2")
+
         activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
         predicates = [activeSchedules] as! [NSPredicate]
@@ -89,7 +95,7 @@ class EventsController: UIViewController, SegueHandler {
         case .showEventDetail:
             guard let vc = segue.destination as? EventDetailController else { fatalError("Wrong view controller type") }
             guard let event = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
-            vc.managedObjectContext = managedObjectContext
+            //vc.managedObjectContext = managedObjectContext
             vc.event = event
         case .showScanner:
             guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller type") }

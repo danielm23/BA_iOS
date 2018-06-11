@@ -1,10 +1,9 @@
 import Foundation
 import UIKit
 import MapKit
-
+import CoreData
 
 class MapController: UIViewController  {
-    
     
     fileprivate var observer: ManagedObjectObserver?
     
@@ -14,29 +13,45 @@ class MapController: UIViewController  {
     //var location: CLLocation!
     var resultSearchController = UISearchController(searchResultsController: nil)
     
+    
+    var managedObjectContext: NSManagedObjectContext!
+
     @IBOutlet weak var mapView: MKMapView!
     
     @IBAction func navigationButton(_ sender: Any) {
         print(locationManager?.location)
-        startNavigation()
+        if (event != nil) {
+            startNavigation()
+        }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
         
         locationManager = CLLocationManager()
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyBest
         locationManager?.requestWhenInUseAuthorization()
         
-        guard let map = mapView, let annotation = EventAnnotation(event: event!) else { return }
-        map.delegate = self
-        map.removeAnnotations(mapView!.annotations)
-        map.addAnnotation(annotation)
-        map.mapType = .hybrid
-        map.setCenter(annotation.coordinate, animated: false)
-        map.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 800, 800), animated: true)
+        mapView.delegate = self
+        mapView.mapType = .hybrid
+        
+        if (event != nil) {
+            setAnnotation(forLocationOf: event!)
+        }
     }
+    
+    fileprivate func setAnnotation(forLocationOf event: Event) {
+        guard let annotation = EventAnnotation(event: event) else { return }
+        mapView.removeAnnotations(mapView!.annotations)
+        mapView.addAnnotation(annotation)
+        mapView.selectAnnotation(annotation, animated: true)
+        mapView.setCenter(annotation.coordinate, animated: false)
+        mapView.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 800, 800), animated: false)
+    }
+    
+    
     
     func startNavigation() {
         

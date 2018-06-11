@@ -21,7 +21,8 @@ class EventDetailController: UIViewController, SegueHandler {
     }
 
     @IBAction func NavigationButtonPressed(_ sender: UIButton) {
-        print("nav")
+        print("button pressed")
+        switchToMap()
     }
     
     fileprivate var observer: ManagedObjectObserver?
@@ -46,9 +47,14 @@ class EventDetailController: UIViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
+
         configureButton()
         configureLabels()
         loadGeoInfos()
+        for category in event.categories! {
+            print(category.title)
+        }
     }
     
     fileprivate func configureLabels() {
@@ -76,17 +82,19 @@ class EventDetailController: UIViewController, SegueHandler {
         }
     }
     
+    fileprivate func setAnnotation(forLocationOf event: Event) {
+        guard let annotation = EventAnnotation(event: event) else { return }
+        mapView.removeAnnotations(mapView!.annotations)
+        mapView.addAnnotation(annotation)
+        mapView.selectAnnotation(annotation, animated: true)
+        mapView.setCenter(annotation.coordinate, animated: false)
+        mapView.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 350, 350), animated: false)
+    }
+    
     fileprivate func updateMapView() {
-        //coordinate.latitude = 50
-        //coordinate.longitude = 8.23
-        
-        guard let map = mapView, let annotation = EventAnnotation(event: event) else { return }
-        map.removeAnnotations(mapView!.annotations)
-        map.addAnnotation(annotation)
-        map.mapType = .hybrid
-        //map.selectAnnotation(annotation, animated: true)
-        map.setCenter(annotation.coordinate, animated: false)
-        map.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 300, 300), animated: false)
+        guard let map = mapView else { return }
+        mapView.mapType = .hybrid
+        setAnnotation(forLocationOf: event)
     }
     
     func loadGeoInfos() {
@@ -117,4 +125,19 @@ class EventDetailController: UIViewController, SegueHandler {
             mapVc.event = event
         }
     }
+    
+    func switchToMap() {
+        
+        guard let controller = self.tabBarController else { return }
+        let navInstance = controller.childViewControllers[2] as! UINavigationController
+        let dest = navInstance.childViewControllers[0] as! MapController
+        dest.event = event
+        controller.selectedIndex = 2
+
+        //self.present(controller, animated: true, completion: nil)
+
+        
+
+    }
+    
 }
