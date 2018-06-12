@@ -11,7 +11,7 @@ import AVFoundation
 
 class ScannerController: UIViewController {
     
-    var qrCode: String? = "qr"
+    var qrCode: String?
     
     @IBOutlet var messageLabel:UILabel!
     @IBOutlet var topbar: UIView!

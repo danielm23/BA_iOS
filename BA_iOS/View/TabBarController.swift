@@ -8,4 +8,9 @@ import CoreData
 
 class TabBarController: UITabBarController {
     var managedObjectContext: NSManagedObjectContext?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        childViewControllers[3].tabBarItem.badgeValue = "20"
+    }
 }

@@ -18,7 +18,7 @@
         <attribute name="info" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isActive" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="isFavorite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" spotlightIndexingEnabled="YES" syncable="YES"/>
-        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="startDate" attributeType="Date" usesScalarValueType="NO" spotlightIndexingEnabled="YES" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="events" inverseEntity="Category" syncable="YES"/>
         <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="events" inverseEntity="Schedule" syncable="YES"/>
@@ -34,6 +34,7 @@
         <attribute name="content" attributeType="String" syncable="YES"/>
         <attribute name="created" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="isNew" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
         <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="messages" inverseEntity="Schedule" syncable="YES"/>
         <uniquenessConstraints>
@@ -47,7 +48,7 @@
         <attribute name="id" attributeType="String" syncable="YES"/>
         <attribute name="info" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isActive" optional="YES" attributeType="Boolean" usesScalarValueType="YES" syncable="YES"/>
-        <attribute name="name" attributeType="String" syncable="YES"/>
+        <attribute name="name" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="version" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="schedule" inverseEntity="Category" syncable="YES"/>
@@ -85,11 +86,11 @@
         </uniquenessConstraints>
     </entity>
     <elements>
+        <element name="Category" positionX="-441" positionY="3987" width="128" height="30"/>
         <element name="Event" positionX="-144" positionY="3837" width="128" height="210"/>
-        <element name="Message" positionX="-432" positionY="3996" width="128" height="30"/>
+        <element name="Message" positionX="-432" positionY="3996" width="128" height="135"/>
         <element name="Schedule" positionX="-378" positionY="4122" width="128" height="225"/>
         <element name="Track" positionX="-441" positionY="3987" width="128" height="105"/>
         <element name="Venue" positionX="-648" positionY="3993" width="128" height="120"/>
-        <element name="Category" positionX="-441" positionY="3987" width="128" height="30"/>
     </elements>
 </model>

@@ -71,9 +71,11 @@ class EventDetailController: UIViewController, SegueHandler {
     }
     
     fileprivate func configureButton() {
-        favoriteButton.setImage(UIImage(named: "NoFavorite"), for: .normal)
-        favoriteButton.setImage(UIImage(named: "Favorite"), for: .selected)
+        
+        favoriteButton.setImage(UIImage(named: "star")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        favoriteButton.setImage(UIImage(named: "filledStar")?.withRenderingMode(.alwaysTemplate), for: .selected)
         favoriteButton.addTarget(self, action: #selector(self.favoriteButtonPressed(_:)), for: .touchUpInside)
+        favoriteButton.tintColor = view.tintColor
         rightItem = UIBarButtonItem(customView: favoriteButton)
         self.navigationItem.rightBarButtonItem = rightItem
         

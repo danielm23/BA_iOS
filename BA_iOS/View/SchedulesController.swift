@@ -1,28 +1,28 @@
 import UIKit
 import CoreData
 
-class SchedulesController: UITableViewController {
-
-    var managedObjectContext: NSManagedObjectContext!
-    var rightItem = UIBarButtonItem()
-    let favoriteButton: UIButton = UIButton(type: .custom)
+class SchedulesController: UITableViewController, SegueHandler {
     
-    @IBAction func infoButtonPressed(_ sender: Any) {
-        print("pressed")
-        let destViewController = storyboard?.instantiateViewController(withIdentifier: "InformationController") as! InformationController
-        destViewController.managedObjectContext = managedObjectContext
-        self.show(destViewController, sender: nil)
-    }
+    var managedObjectContext: NSManagedObjectContext!
+    fileprivate var dataSource: TableViewDataSource<SchedulesController>!
+    fileprivate var observer: ManagedObjectObserver?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if managedObjectContext == nil {
+            managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
+        }
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.topItem?.title = "Schedules"
         setupTableView()
-        configureButton()
     }
     
-    fileprivate var dataSource: TableViewDataSource<SchedulesController>!
-    
-    fileprivate func setupTableView() {
+    enum SegueIdentifier: String {
+        case showScheduleDetail = "showScheduleDetail"
+        case showScanner = "showScanner"
+    }
+
+    func setupTableView() {
         
         let request = Schedule.sortedFetchRequest
         request.fetchBatchSize = 20
@@ -32,13 +32,51 @@ class SchedulesController: UITableViewController {
         dataSource = TableViewDataSource(tableView: tableView, cellIdentifier: "ScheduleCell", fetchedResultsController: frc, delegate: self)
     }
     
-    fileprivate func configureButton() {
-        favoriteButton.setImage(UIImage(named: "Favorite"), for: .normal)
-        favoriteButton.addTarget(self, action: #selector(self.infoButtonPressed(_:)), for: .touchUpInside)
-        rightItem = UIBarButtonItem(customView: favoriteButton)
-        self.navigationItem.rightBarButtonItem = rightItem
-        print("set button")
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        switch segueIdentifier(for: segue) {
+        case .showScheduleDetail:
+            guard let vc = segue.destination as? ScheduleDetailController else { fatalError("Wrong view controller type") }
+            guard let schedule = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
+            vc.schedule = schedule
+        case .showScanner:
+            guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller type") }
+
+        }
     }
+    
+    @IBAction func unwind(_ seque: UIStoryboardSegue) {
+        if let sourceVC = seque.source as? ScannerController {
+            if let id = sourceVC.qrCode {
+                print(id)
+                loadEntities(ofScheudle: id)
+            }
+        }
+    }
+    
+    func loadEntities(ofScheudle id: String) {
+        
+        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
+        
+        let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
+        print("before schedule")
+        Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after schedule")
+        Venue.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after venue")
+        Track.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after track")
+        Message.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after message")
+        Category.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after categories")
+        loadConfig.group.notify(queue: .main) {
+            print("before events")
+            Event.loadAndStore(identifiedBy: id, config: loadConfig)
+            print("after events")
+        }
+    }
+    
 }
 
 extension SchedulesController: TableViewDataSourceDelegate {
@@ -46,15 +84,10 @@ extension SchedulesController: TableViewDataSourceDelegate {
         //guard let schedule = object as? LocalizedStringConvertible else { fatalError("Wrong object type") }
         cell.configure(for: object)
     }
-    
-    override  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
-        do {
-            dataSource.selectedObject?.setActive()
-            try managedObjectContext.save()
-            tableView.reloadData()
-            print("saved")
-        } catch {
-            fatalError("error setting active")
-        }
-    }
+}
+
+struct loadAndStoreConfiguration {
+    let context: NSManagedObjectContext
+    let group = DispatchGroup()
+    let session = URLSession.shared
 }
