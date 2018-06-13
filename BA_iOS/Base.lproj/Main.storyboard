@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zQ8-r6-cVQ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14269.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="zQ8-r6-cVQ">
     <device id="retina4_0" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14252.5"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -333,7 +333,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VfO-3l-5Cr" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="L9X-1P-o6Q" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="-60" y="2625"/>
+            <point key="canvasLocation" x="-193" y="2562"/>
         </scene>
         <!--Events Navigator-->
         <scene sceneID="Ezi-gV-akK">
@@ -396,32 +396,10 @@
             <point key="canvasLocation" x="1106" y="42"/>
         </scene>
         <!--Schedule Detail Controller-->
-        <scene sceneID="W3W-2S-80k">
-            <objects>
-                <viewController id="aa3-gA-vGo" customClass="ScheduleDetailController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Mfy-Ib-3uo">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lZe-0w-ZSV">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="xob-qZ-IK9"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="tqg-HW-beY" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-731" y="2625"/>
-        </scene>
-        <!--Schedule Detail Controller-->
         <scene sceneID="Q05-6d-dpu">
             <objects>
                 <viewController id="BKp-99-moB" customClass="ScheduleDetailController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="I5D-Q8-kpD" customClass="ScheduleD">
+                    <view key="view" contentMode="scaleToFill" id="I5D-Q8-kpD">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
@@ -437,7 +415,43 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ofi-SO-NEX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-731" y="2625"/>
+            <point key="canvasLocation" x="-968" y="2562"/>
+        </scene>
+        <!--Schedules Collection Controller-->
+        <scene sceneID="m0h-6E-IMN">
+            <objects>
+                <collectionViewController id="sPn-iO-u3C" customClass="SchedulesCollectionController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="ESx-md-hCj">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="aQU-nQ-h7b">
+                            <size key="itemSize" width="50" height="50"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells/>
+                        <connections>
+                            <outlet property="dataSource" destination="sPn-iO-u3C" id="smT-3b-hga"/>
+                            <outlet property="delegate" destination="sPn-iO-u3C" id="VpO-a7-g7O"/>
+                        </connections>
+                    </collectionView>
+                    <navigationItem key="navigationItem" id="lqQ-hB-mI9">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="x0I-E1-rHa">
+                            <connections>
+                                <segue destination="B0K-bi-dGX" kind="presentation" identifier="showScanner" id="YH2-9v-nG6"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="collectionView" destination="ESx-md-hCj" id="UDW-an-hh6"/>
+                        <segue destination="BKp-99-moB" kind="show" identifier="showScheduleDetail" id="Hvt-Rh-rHK"/>
+                    </connections>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FiB-4n-dfj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-967.5" y="1720.7746478873239"/>
         </scene>
         <!--Schedules-->
         <scene sceneID="w3W-4K-j9Z">
@@ -474,7 +488,6 @@
                                 <connections>
                                     <outlet property="subtitle" destination="g4R-hK-1AG" id="D48-xC-6AC"/>
                                     <outlet property="title" destination="gKl-vm-XyT" id="6YT-rE-vGJ"/>
-                                    <segue destination="aa3-gA-vGo" kind="show" identifier="showScheduleDetail" id="ets-9b-xDV"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -484,13 +497,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="TWi-cQ-j43">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="3j8-vg-t1Y">
-                            <connections>
-                                <segue destination="B0K-bi-dGX" kind="popoverPresentation" identifier="showScanner" popoverAnchorBarButtonItem="3j8-vg-t1Y" id="NVT-B5-UVU">
-                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                </segue>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="add" id="3j8-vg-t1Y"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Dt5-RS-lQn" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -595,34 +602,12 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="qXJ-XE-mUy" kind="relationship" relationship="rootViewController" id="tSg-XA-3q7"/>
+                        <segue destination="sPn-iO-u3C" kind="relationship" relationship="rootViewController" id="xNO-Y7-hoH"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2oq-fR-QVb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-193" y="950"/>
-        </scene>
-        <!--Schedule Detail Controller-->
-        <scene sceneID="fxH-eL-bEl">
-            <objects>
-                <viewController id="hzB-3m-Tyk" customClass="ScheduleDetailController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="7pD-Ce-RhM" customClass="ScheduleD">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vgX-hB-zCo">
-                                <rect key="frame" x="0.0" y="64" width="320" height="455"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <viewLayoutGuide key="safeArea" id="6nh-Bv-9DD"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="boc-4u-5Ba" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-731" y="2625"/>
         </scene>
     </scenes>
     <resources>
