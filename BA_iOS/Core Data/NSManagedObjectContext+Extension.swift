@@ -10,6 +10,7 @@ extension NSManagedObjectContext {
     func saveOrRollback() -> Bool {
         do {
             try save()
+            print("SAVE")
             return true
         } catch {
             rollback()
@@ -19,6 +20,7 @@ extension NSManagedObjectContext {
     
     func performChanges(block: @escaping () -> ()) {
         perform {
+            print("performChanges")
             block()
             _ = self.saveOrRollback()
         }

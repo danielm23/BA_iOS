@@ -8,8 +8,11 @@
 
 import UIKit
 import AVFoundation
+import CoreData
 
 class ScannerController: UIViewController {
+    
+    var managedObjectContext: NSManagedObjectContext!
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return UIStatusBarStyle.lightContent
@@ -117,12 +120,8 @@ class ScannerController: UIViewController {
         
         let alertPrompt = UIAlertController(title: "Add Schedule", message: "\(qrCode)", preferredStyle: .actionSheet)
         let confirmAction = UIAlertAction(title: "Confirm", style: UIAlertActionStyle.default, handler: { (action) -> Void in
-            print("Ok button tapped")
-            //let logInViewController = QRCodeViewController()
-            //self.present(logInViewController, animated: true, completion: nil) // When press "OK" button, present logInViewController
-            self.performSegue(withIdentifier: "unwindFromScanner", sender: qrCode)
-            self.dismiss(animated: true, completion: nil)
-
+            print("loading schedules ...")
+            self.loadEntities(ofScheudle: qrCode)
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
@@ -133,10 +132,38 @@ class ScannerController: UIViewController {
         present(alertPrompt, animated: true, completion: nil)
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    func loadEntities(ofScheudle id: String) {
+        
+        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
+        
+        let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
+        print("before schedule")
+        Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after schedule")
+        Venue.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after venue")
+        Track.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after track")
+        Message.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after message")
+        Category.loadAndStore(identifiedBy: id, config: loadConfig)
+        print("after categories")
+        loadConfig.group.notify(queue: .main) {
+            print("before events")
+            loadConfig.group.enter()
+            Event.loadAndStore(identifiedBy: id, config: loadConfig)
+            loadConfig.group.leave()
+            print("after events")
+            loadConfig.group.notify(queue: .main) {
+                self.performSegue(withIdentifier: "unwindFromScanner", sender: self.qrCode)
+            }
+        }
+    }
+    
+    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         //let destVC: QRCodeViewController = segue.destination as! QRCodeViewController
         //qrCode = "transmit"
-    }
+    }*/
 }
 
 extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {

@@ -44,8 +44,8 @@
                             <constraint firstItem="rb2-yj-Tj2" firstAttribute="top" secondItem="2Oa-U5-2af" secondAttribute="top" id="zoa-fL-8RE"/>
                         </constraints>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="GET STARTED" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lhj-Li-jOU">
-                        <rect key="frame" x="40" y="40" width="95.5" height="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" alpha="0.69999998807907104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SCHEDULE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lhj-Li-jOU">
+                        <rect key="frame" x="40" y="40" width="75.5" height="17"/>
                         <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
                         <color key="textColor" red="0.51764705879999995" green="0.51372549020000002" blue="0.54117647059999996" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>

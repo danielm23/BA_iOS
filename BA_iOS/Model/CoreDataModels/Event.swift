@@ -79,6 +79,8 @@ extension Event: Managed {
                 print(x)
             }
         }
+        print("inserted: ")
+        print(event)
         return event
     }
     

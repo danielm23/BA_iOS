@@ -1,14 +1,5 @@
-//
-//  TableViewDataSource.swift
-//  Moody
-//
-//  Created by Florian on 31/08/15.
-//  Copyright © 2015 objc.io. All rights reserved.
-//
-
 import UIKit
 import CoreData
-
 
 protocol TableViewDataSourceDelegate: class {
     associatedtype Object: NSFetchRequestResult
@@ -40,7 +31,6 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     
     func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
         
-        
         return fetchedResultsController.object(at: indexPath)
     }
     
@@ -55,12 +45,13 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         NSFetchedResultsController<NSFetchRequestResult>.deleteCache(withName: fetchedResultsController.cacheName)
         do { try fetchedResultsController.performFetch() } catch { fatalError("fetch request failed") }
         tableView.reloadData()
+        print("update")
     }
 
     
     // MARK: Private
     let tableView: UITableView
-    fileprivate let fetchedResultsController: NSFetchedResultsController<Object>
+    let fetchedResultsController: NSFetchedResultsController<Object>
     fileprivate weak var delegate: Delegate!
     fileprivate let cellIdentifier: String
     
@@ -128,7 +119,11 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         tableView.beginUpdates()
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any,
+                    at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType,
+                    newIndexPath: IndexPath?) {
         switch type {
         case .insert:
             guard let indexPath = newIndexPath else { fatalError("Index path should be not nil") }
@@ -147,6 +142,24 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
             guard let indexPath = indexPath else { fatalError("Index path should be not nil") }
             tableView.deleteRows(at: [indexPath], with: .fade)
         }
+    }
+    
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange sectionInfo: NSFetchedResultsSectionInfo,
+                    atSectionIndex sectionIndex: Int,
+                    for type: NSFetchedResultsChangeType) {
+        
+        switch (type) {
+        case .insert:
+            self.tableView.insertSections(NSIndexSet(index: sectionIndex) as IndexSet, with: .fade)
+            break
+        case .delete:
+            self.tableView.deleteSections(NSIndexSet(index: sectionIndex) as IndexSet, with: .fade)
+            break
+        default:
+            break
+        }
+        
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

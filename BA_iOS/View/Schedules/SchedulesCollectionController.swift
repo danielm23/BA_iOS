@@ -62,6 +62,7 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
             vc.managedObjectContext = managedObjectContext
         case .showScanner:
             guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller type") }
+            scanner.managedObjectContext = managedObjectContext
             
         }
     }
@@ -70,7 +71,7 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         if let sourceVC = seque.source as? ScannerController {
             if let id = sourceVC.qrCode {
                 print(id)
-                loadEntities(ofScheudle: id)
+                //loadEntities(ofScheudle: id)
             }
         }
     }
@@ -102,6 +103,7 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
             print("before events")
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
             print("after events")
+            //self.dataSource.collectionView.reloadData()
         }
     }
 }

@@ -22,7 +22,7 @@ class ScheduleDetailController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.navigationItem.largeTitleDisplayMode = .never
 
-        self.title = "Vestibulum id ligula porta felis euismod semper."//schedule.name
+        self.title = schedule.name
         self.navigationController?.navigationBar.prefersLargeTitles = false
 
         //self.navigationController?.navigationBar.topItem?.title = "abc"

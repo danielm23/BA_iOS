@@ -15,7 +15,7 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
     typealias Cell = Delegate.Cell
     
     let collectionView: UICollectionView
-    fileprivate let fetchedResultsController: NSFetchedResultsController<Object>
+    let fetchedResultsController: NSFetchedResultsController<Object>
     fileprivate weak var delegate: Delegate!
     fileprivate let cellIdentifier: String
 
@@ -33,9 +33,21 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
     
     // NUMBER OF ITEMS IN SECTION
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let section = fetchedResultsController.sections?[section] else { return 0 }
-        return section.numberOfObjects
+        print("number of items in section \(section):")
+        print(fetchedResultsController.sections![section].numberOfObjects)
+        return fetchedResultsController.sections![section].numberOfObjects
+            
+            //.sections?[section] else { return 0 }
+        
+        //return section.numberOfObjects
     }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        print("number of sections:")
+        print(fetchedResultsController.sections?.count)
+        return fetchedResultsController.sections?.count ?? 1
+    }
+    
     
     // CELL FOR ITEM AT INDEX PATH
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -62,21 +74,22 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
     private var itemChanges = [(type: NSFetchedResultsChangeType, indexPath: IndexPath?, newIndexPath: IndexPath?)]()
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
+        print("controller didChange sectionInfo")
         sectionChanges.append((type, sectionIndex))
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?)
-    {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
+        print("controller didChange at Index Path")
         itemChanges.append((type, indexPath, newIndexPath))
     }
     
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>)
-    {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>){
         collectionView.performBatchUpdates({
             
             for change in self.sectionChanges {
                 switch change.type {
                 case .insert: self.collectionView.insertSections([change.sectionIndex])
+                     print("insert section")
                 case .delete: self.collectionView.deleteSections([change.sectionIndex])
                 default: break
                 }
@@ -85,6 +98,7 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
             for change in self.itemChanges {
                 switch change.type {
                 case .insert: self.collectionView.insertItems(at: [change.newIndexPath!])
+                    print("insert item")
                 case .delete: self.collectionView.deleteItems(at: [change.indexPath!])
                 case .update: self.collectionView.reloadItems(at: [change.indexPath!])
                 case .move:
@@ -98,5 +112,4 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
             self.itemChanges.removeAll()
         })
     }
-
 }

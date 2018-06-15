@@ -6,6 +6,8 @@ import CoreData
 
 class EventsController: UIViewController, SegueHandler {
     
+    
+    
     enum SegueIdentifier: String {
         case showEventDetail = "showEventDetail"
         case showFilter = "showFilter"
@@ -15,7 +17,7 @@ class EventsController: UIViewController, SegueHandler {
     @IBOutlet weak var segmentedControl: UISegmentedControl!
     
     fileprivate var dataSource: TableViewDataSource<EventsController>!
-    fileprivate var observer: ManagedObjectObserver?
+    //fileprivate var observer: ManagedObjectObserver?
     
     var managedObjectContext: NSManagedObjectContext!
     
@@ -36,6 +38,8 @@ class EventsController: UIViewController, SegueHandler {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("did load")
+
         if managedObjectContext == nil {
             managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
         }
@@ -43,12 +47,13 @@ class EventsController: UIViewController, SegueHandler {
         favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
         predicates = [activeSchedules] as! [NSPredicate]
         setupTableView()
+        //dataSource.updateFetch()
     }
 
     fileprivate func setupTableView() {
-        var request = NSFetchRequest<Event>()
         schedulePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        request = Event.sortedFetchRequest(with: schedulePredicate!)
+        print(schedulePredicate)
+        let request = Event.sortedFetchRequest(with: schedulePredicate!)
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: "startDate", cacheName: nil)
@@ -59,6 +64,11 @@ class EventsController: UIViewController, SegueHandler {
         super.viewDidAppear(animated)
         print("did appear")
         setupTableView()
+        do {
+            //try dataSource.fetchedResultsController.performFetch()
+            print("update")
+            
+        } catch { fatalError("fetch request failed") }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
