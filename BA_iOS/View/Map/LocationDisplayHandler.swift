@@ -1,7 +1,7 @@
 import Foundation
 import MapKit
 
-protocol LocationDisplayHandler {
+protocol LocationDisplayHandler: class {
     weak var mapView: MKMapView? { get }
     var selectedPin: MKPlacemark? { get set }
     var selectedLocation: JsonGeoOverview? { get set}
@@ -12,7 +12,7 @@ protocol LocationDisplayHandler {
 }
 
 extension LocationDisplayHandler {
-    mutating func showOnMap(location: JsonGeoOverview) {
+    func showOnMap(location: JsonGeoOverview) {
         print("showOnMap")
         let position = CLLocationCoordinate2D(latitude: location.latitude!,
                                               longitude: location.longitude!)

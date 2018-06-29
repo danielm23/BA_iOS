@@ -11,18 +11,19 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
     @IBOutlet weak var venueLabel: UILabel!
     @IBOutlet weak var eventDetail: UILabel!
     @IBOutlet weak var timeLabel: UILabel!
-    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var mapView: MKMapView?
     
     var rightItem = UIBarButtonItem()
     let favoriteButton: UIButton = UIButton(type: .custom)
-     var location: JsonGeoOverview?
+    var selectedLocation: JsonGeoOverview?
+    var selectedPin: MKPlacemark?
     
     /*enum SegueIdentifier: String {
         case showMap = "showMap"
     }*/
 
     @IBAction func NavigationButtonPressed(_ sender: UIButton) {
-        print(location)
+        print(selectedLocation)
         switchToMap()
     }
     
@@ -52,6 +53,7 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
 
         configureButton()
         configureLabels()
+        mapView?.mapType = .hybrid
         loadGeoInfos()
         
         
@@ -98,7 +100,7 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
     
     fileprivate func updateMapView() {
         guard let map = mapView else { return }
-        mapView.mapType = .hybrid
+        mapView?.mapType = .hybrid
         //if event.venue?.geoinformation != nil {
         //    //setAnnotation(forLocationOf: event)
         //}
@@ -112,14 +114,14 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
         config.group.enter()
         Webservice().load(resource: JsonGeoOverview.get(of: geoId!), session: config.session) {
             overview in
-                self.location = overview
+                self.selectedLocation = overview
                 config.group.leave()
         }
         config.group.notify(queue: .main) {
-            print("location:")
-            print(self.location?.title)
+            self.showOnMap(location: self.selectedLocation!)
+
         }
-        
+        //self.showOnMap(location: self.selectedLocation?)
 
         //GeoOverview.loadAndStore(identifiedBy: geoId!, config: config)
         
@@ -151,9 +153,20 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
         //print(dest.selectedLocation)
         //dest.showOnMap(location: location!)
         controller.selectedIndex = 2
-        dest.selectedLocation = location
+        dest.selectedLocation = selectedLocation
         print(dest.selectedLocation?.title)
         dest.showOnMap(location: dest.selectedLocation!)
         //self.present(controller, animated: true, completion: nil)
+    }
+}
+
+extension EventDetailController: LocationDisplayHandler {
+    
+    func removeLocationInformations() {
+        
+    }
+    
+    func setInformation(for location: JsonGeoOverview) {
+        
     }
 }
