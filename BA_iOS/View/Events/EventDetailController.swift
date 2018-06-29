@@ -3,7 +3,7 @@ import UIKit
 import CoreData
 import MapKit
 
-class EventDetailController: UIViewController, SegueHandler {
+class EventDetailController: UIViewController /*, SegueHandler*/ {
     
     var managedObjectContext: NSManagedObjectContext!
     
@@ -15,13 +15,14 @@ class EventDetailController: UIViewController, SegueHandler {
     
     var rightItem = UIBarButtonItem()
     let favoriteButton: UIButton = UIButton(type: .custom)
+     var location: JsonGeoOverview?
     
-    enum SegueIdentifier: String {
+    /*enum SegueIdentifier: String {
         case showMap = "showMap"
-    }
+    }*/
 
     @IBAction func NavigationButtonPressed(_ sender: UIButton) {
-        print("button pressed")
+        print(location)
         switchToMap()
     }
     
@@ -52,6 +53,8 @@ class EventDetailController: UIViewController, SegueHandler {
         configureButton()
         configureLabels()
         loadGeoInfos()
+        
+        
         for category in event.categories! {
             print(category.title)
         }
@@ -84,66 +87,73 @@ class EventDetailController: UIViewController, SegueHandler {
         }
     }
     
-    fileprivate func setAnnotation(forLocationOf event: Event) {
+    /*fileprivate func setAnnotation(forLocationOf event: Event) {
         guard let annotation = EventAnnotation(event: event) else { return }
         mapView.removeAnnotations(mapView!.annotations)
         mapView.addAnnotation(annotation)
         mapView.selectAnnotation(annotation, animated: true)
         mapView.setCenter(annotation.coordinate, animated: false)
         mapView.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 350, 350), animated: false)
-    }
+    }*/
     
     fileprivate func updateMapView() {
         guard let map = mapView else { return }
         mapView.mapType = .hybrid
-        if event.venue?.geoinformation != nil {
-            setAnnotation(forLocationOf: event)
-        }
+        //if event.venue?.geoinformation != nil {
+        //    //setAnnotation(forLocationOf: event)
+        //}
     }
     
     func loadGeoInfos() {
-        let config = LoadAndStoreConfiguration(context: managedObjectContext)
+        var config = LoadAndStoreConfiguration()
+        config.context = managedObjectContext
+        let geoId = event.venue?.geoinformationId
+        
         config.group.enter()
-        Webservice().load(resource: JsonGeoinformation.get(id: (event.venue?.geoinformationId)!), session: config.session) { geoinformation in if geoinformation != nil {
-                self.event.venue?.setGeoinformation(info: geoinformation!)
-            }
-            config.group.leave()
+        Webservice().load(resource: JsonGeoOverview.get(of: geoId!), session: config.session) {
+            overview in
+                self.location = overview
+                config.group.leave()
         }
-        config.group.enter()
-        Webservice().load(resource: JsonGeolocation.get(of: (event.venue?.geoinformationId)!), session: config.session) { geolocations in if geolocations != nil {
-                for geolocation in geolocations! {
-                    self.event.venue?.setGeolocation(location: geolocation)
-                }
-            config.group.leave()
-            }
-            config.group.notify(queue: .main) {
-                self.updateMapView()
-            }
+        config.group.notify(queue: .main) {
+            print("location:")
+            print(self.location?.title)
         }
+        
+
+        //GeoOverview.loadAndStore(identifiedBy: geoId!, config: config)
+        
+        //let locationPredicate = NSPredicate(format: "%K == %@", #keyPath(id), geoId!)
+        //let loc = GeoOverview.findOrFetch(in: managedObjectContext, matching: locationPredicate)
+        
+        //let jsonEncoder = JSONEncoder()
+        //let jsonData = try jsonEncoder.encode(loc)
+        //location = jsonData
     }
-    
+    /*
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         switch segueIdentifier(for: segue) {
         case .showMap:
             //guard let event = event else { fatalError("Showing detail, but no selected row?")
             let mapVc = segue.destination as! MapController
-            mapVc.event = event
+            //mapVc.event = event
+            mapVc.navigationButton.isSelected = true
         }
-    }
+    }*/
     
     func switchToMap() {
         
         guard let controller = self.tabBarController else { return }
         let navInstance = controller.childViewControllers[2] as! UINavigationController
-        let dest = navInstance.childViewControllers[0] as! MapController
-        dest.event = event
+        var dest = navInstance.childViewControllers[0] as! MapController
+        //dest.selectedLocation = location
+        //print(dest.selectedLocation)
+        //dest.showOnMap(location: location!)
         controller.selectedIndex = 2
-
+        dest.selectedLocation = location
+        print(dest.selectedLocation?.title)
+        dest.showOnMap(location: dest.selectedLocation!)
         //self.present(controller, animated: true, completion: nil)
-
-        
-
     }
-    
 }

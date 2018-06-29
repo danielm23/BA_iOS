@@ -67,7 +67,8 @@ extension Event: Managed {
         }
         
         // set categories
-        let config = LoadAndStoreConfiguration(context: context)
+        var config = LoadAndStoreConfiguration()
+        config.set(context: context)
 
         Webservice().load(resource: JsonEvent.getCategories(of: event.id), session: config.session) { categories in for category in categories! {
                 //print(category.id)
@@ -87,8 +88,8 @@ extension Event: Managed {
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         Webservice().load(resource: JsonSchedule.getEvents(of: scheduleId), session: config.session) { events in
             for event in events! {
-                config.context.performChanges {
-                    let _ = Event.insert(into: config.context, json: event)
+                config.context?.performChanges {
+                    let _ = Event.insert(into: config.context!, json: event)
                 }
             }
         }

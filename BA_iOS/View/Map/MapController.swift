@@ -2,104 +2,144 @@ import Foundation
 import UIKit
 import MapKit
 import CoreData
+import CoreLocation
 
-class MapController: UIViewController  {
+class MapController: UIViewController, CLLocationManagerDelegate {
     
-    fileprivate var observer: ManagedObjectObserver?
+    @IBOutlet weak var mapView: MKMapView?
+    @IBOutlet weak var selectedLocationView: UIView!
+    @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var navigationButton: UIButton!
     
-    var event: Event?
-    var locationManager: CLLocationManager?
-    var startLocation: CLLocation?
-    //var location: CLLocation!
-    var resultSearchController = UISearchController(searchResultsController: nil)
+    var selectedLocation: JsonGeoOverview?
+    var selectedPin: MKPlacemark?
+    //var currentLocation: CLLocation?
     
+    let locationManager = CLLocationManager()
     
-    var managedObjectContext: NSManagedObjectContext!
-
-    @IBOutlet weak var mapView: MKMapView!
+    var searchController: UISearchController? = nil
     
     @IBAction func navigationButton(_ sender: Any) {
-        print(locationManager?.location)
-        if (event != nil) {
-            startNavigation()
+        print(navigationButton.state) // 1: clear, 5: navigation
+
+        switch navigationButton.state.rawValue {
+        case 1:
+            print("case 1")
+            clearMap()
+        default:
+            let destination = CLLocation(latitude: (selectedLocation?.latitude)!,
+                                         longitude: (selectedLocation?.longitude)!)
+            showRoute(from: locationManager.location!, to: destination)
+            navigationButton.isSelected = false
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
-        
-        locationManager = CLLocationManager()
-        locationManager?.delegate = self
-        locationManager?.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager?.requestWhenInUseAuthorization()
-        
-        mapView.delegate = self
-        mapView.mapType = .hybrid
-        
-        if (event != nil) {
-            setAnnotation(forLocationOf: event!)
+        configureLocationManager()
+        configureSearchController()
+        configuresSelectedLocationButton()
+        configureMapView()
+        //clearMap()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if selectedLocation != nil {
+            print("is selected -> nevigation")
+            navigationButton.isSelected = true
+        }
+        else {
+            print("not selected -> clear")
+            navigationButton.isSelected = false
+            clearMap()
         }
     }
     
-    fileprivate func setAnnotation(forLocationOf event: Event) {
-        guard let annotation = EventAnnotation(event: event) else { return }
-        mapView.removeAnnotations(mapView!.annotations)
-        mapView.addAnnotation(annotation)
-        mapView.selectAnnotation(annotation, animated: true)
-        mapView.setCenter(annotation.coordinate, animated: false)
-        mapView.setRegion(MKCoordinateRegionMakeWithDistance(annotation.coordinate, 800, 800), animated: false)
+    func configureLocationManager() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestWhenInUseAuthorization()
+    }
+    
+    func configureSearchController() {
+        let locationSearchController = storyboard!.instantiateViewController(withIdentifier: "LocationSearchController") as! LocationSearchController
+        locationSearchController.handleMapSearchDelegate = self
+        
+        searchController = UISearchController(searchResultsController: locationSearchController)
+        searchController?.searchResultsUpdater = locationSearchController
+        searchController?.delegate = self
+        searchController?.obscuresBackgroundDuringPresentation = true
+        searchController?.searchBar.delegate = locationSearchController
+        searchController?.searchBar.placeholder = "Search Locations"
+        
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+    
+    func configuresSelectedLocationButton() {
+        
+        navigationButton.setTitle("Clear", for: .normal)
+        navigationButton.setTitle("Navigation", for: .selected)
     }
     
     
+    func setLocationInformations() {
+        locationLabel.text = selectedLocation?.title
+        navigationButton.isSelected = true
+    }
     
-    func startNavigation() {
-        
-        let sourcePlacemark = MKPlacemark(coordinate: (locationManager?.location?.coordinate)!, addressDictionary: nil)
-        
-        let destinationLocation = CLLocation(latitude: (event?.venue?.geolocation?.latitude)!, longitude: (event?.venue?.geolocation?.longitude)!)
+    func removeLocationInformations() {
+        locationLabel.text = ""
+    }
+    
+    func configureMapView() {
+        mapView?.delegate = self
+        mapView?.mapType = .hybrid
+    }
+    
+    func searchBarIsEmpty() -> Bool {
+        return searchController?.searchBar.text?.isEmpty ?? true
+    }
+    
+    
 
-        let destinationPlacemark = MKPlacemark(coordinate: destinationLocation.coordinate, addressDictionary: nil)
-        
-        let request = MKDirectionsRequest()
-        request.source = MKMapItem(placemark: sourcePlacemark)
-        request.destination = MKMapItem(placemark: destinationPlacemark)
-        request.requestsAlternateRoutes = false
-        request.transportType = .walking
-        
-        let directions = MKDirections(request: request)
-        
-        directions.calculate {
-            [weak self] (response, error) in
-            if error == nil {
-                let route = response!.routes.first
-                self?.mapView.add((route?.polyline)!)
-                for step in (route?.steps)! {
-                    print(step.instructions)
-                }
-            }
-        }
-    }
 }
-
-extension MapController: CLLocationManagerDelegate {
+/*
+extension MapController {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if startLocation == nil {
-            startLocation = locations.first
-        } else {
+        print("didupdateloc")
+        if currentLocation == nil {
+            currentLocation = locations.first
+            print(locations.first)
+        }
+        else {
             guard let latest = locations.first else { return }
-            let distanceInMeters = startLocation?.distance(from: latest)
-            print("distance in meters: \(distanceInMeters)")
+        }
+        
+        print(currentLocation)
+    }
+    
+    private func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+        print("didchangeauth")
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
+            print("startUpdating")
+            locationManager.startUpdatingLocation()
         }
     }
     
-    fileprivate func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse || status == .authorizedAlways {
-            locationManager?.startUpdatingLocation()
-        }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error){
+        print("Location manager failed with error = \(error)")
     }
-}
+    
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        print("locationManagerDidPauseLocationUpdates")
+    }
+    
+    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+        print("locationManagerDidResumeLocationUpdates")
+    }
+}*/
 
 extension MapController: MKMapViewDelegate {
     
@@ -107,25 +147,25 @@ extension MapController: MKMapViewDelegate {
         let renderer = MKPolylineRenderer(overlay: overlay)
         renderer.strokeColor = UIColor.blue
         renderer.lineWidth = 4.5
+        print("renderer applied")
         return renderer
     }
 }
-/*
-extension MapController: UISearchResultsUpdating {
-    // MARK: - UISearchResultsUpdating Delegate
-    func updateSearchResults(for searchController: UISearchController) {
-        // TODO
+
+extension MapController: SegueHandler {
+    enum SegueIdentifier: String {
+        case searchTest = "searchTest"
     }
 }
-*/
-public class EventAnnotation: NSObject, MKAnnotation {
-    public var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D()
-    public let title: String?
-    
-    init?(event: Event) {
-        self.coordinate.longitude = (event.venue?.geolocation?.longitude)!
-        self.coordinate.latitude = (event.venue?.geolocation?.latitude)!
-        title = event.venue?.geoinformation?.title
-        super.init()
+
+extension MapController: UISearchControllerDelegate { }
+
+extension MapController: LocationDisplayHandler {    
+    func setInformation(for location: JsonGeoOverview) {
+        locationLabel.text = location.title
+        navigationButton.isSelected = true
     }
 }
+
+extension MapController: NavigationHandler { }
+

@@ -24,8 +24,6 @@ public class Schedule: NSManagedObject {
     @NSManaged fileprivate(set) var categories: Set<Category>?
     @NSManaged fileprivate(set) var tracks: Set<Track>?
 
-
-
     /*
     static func findOrCreate(for scheduleId: String, in context: NSManagedObjectContext) -> Schedule {
         let predicate = NSPredicate(format: "%K == %@", #keyPath(id), scheduleId)
@@ -71,8 +69,8 @@ extension Schedule {
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.get(scheduleId), session: config.session) { schedule in
-            config.context.performChanges {
-                let _ = Schedule.insert(into: config.context, json: schedule!)
+            config.context?.performChanges {
+                let _ = Schedule.insert(into: config.context!, json: schedule!)
             }
             config.group.leave()
         }

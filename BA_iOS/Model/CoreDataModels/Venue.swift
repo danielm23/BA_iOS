@@ -13,18 +13,8 @@ public class Venue: NSManagedObject {
     
     // relationships
     @NSManaged fileprivate(set) var schedule: Schedule?
+    @NSManaged fileprivate(set) var location: GeoOverview?
     @NSManaged fileprivate(set) var events: Set<Event>?
-    
-    var geoinformation: JsonGeoinformation?
-    var geolocation: JsonGeolocation?
-    
-    public func setGeoinformation(info: JsonGeoinformation) {
-        geoinformation = info
-    }
-    
-    public func setGeolocation(location: JsonGeolocation) {
-        geolocation = location
-    }
 }
 
 extension Venue: Managed {
@@ -46,14 +36,17 @@ extension Venue: Managed {
         let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
         venue.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
         
+        //let locationPredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.geoinformationId)
+        //venue.location = GeoOverview.findOrFetch(in: context, matching: locationPredicate)
+
         return venue
     }
 
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.getVenues(of: scheduleId), session: config.session) { venues in for venue in venues! {
-                config.context.performChanges {
-                    let _ = Venue.insert(into: config.context, json: venue)
+            config.context?.performChanges {
+                let _ = Venue.insert(into: config.context!, json: venue)
                 }
             }
             config.group.leave()

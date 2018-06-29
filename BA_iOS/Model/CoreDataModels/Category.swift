@@ -39,8 +39,8 @@ extension Category: Managed {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.getCategories(of: scheduleId), session: config.session) { categories in for category in categories! {
                 print(category)
-                config.context.performChanges {
-                    let _ = Category.insert(into: config.context, json: category)
+            config.context?.performChanges {
+                let _ = Category.insert(into: config.context!, json: category)
                 }
             }
             config.group.leave()

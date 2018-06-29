@@ -40,8 +40,8 @@ extension Track: Managed {
         Webservice().load(resource: JsonSchedule.getTracks(of: scheduleId), session: config.session) { tracks in
             for track in tracks! {
                 print(track)
-                config.context.performChanges {
-                    let _ = Track.insert(into: config.context, json: track)
+                config.context?.performChanges {
+                    let _ = Track.insert(into: config.context!, json: track)
                 }
             }
         }

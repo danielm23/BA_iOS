@@ -30,6 +30,13 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="GeoOverview" representedClassName="GeoOverview" syncable="YES">
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="latitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="longitude" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES" syncable="YES"/>
+        <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="venues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GeoOverview" inverseName="venues" inverseEntity="GeoOverview" syncable="YES"/>
+    </entity>
     <entity name="Message" representedClassName="Message" syncable="YES">
         <attribute name="content" attributeType="String" syncable="YES"/>
         <attribute name="created" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
@@ -78,6 +85,7 @@
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="name" attributeType="String" syncable="YES"/>
         <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="venue" inverseEntity="Event" syncable="YES"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="GeoOverview" syncable="YES"/>
         <relationship name="schedule" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Schedule" inverseName="venues" inverseEntity="Schedule" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -91,6 +99,7 @@
         <element name="Message" positionX="-432" positionY="3996" width="128" height="135"/>
         <element name="Schedule" positionX="-378" positionY="4122" width="128" height="225"/>
         <element name="Track" positionX="-441" positionY="3987" width="128" height="105"/>
-        <element name="Venue" positionX="-648" positionY="3993" width="128" height="120"/>
+        <element name="Venue" positionX="-648" positionY="3993" width="128" height="135"/>
+        <element name="GeoOverview" positionX="-441" positionY="3987" width="128" height="120"/>
     </elements>
 </model>

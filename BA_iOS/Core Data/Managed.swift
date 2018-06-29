@@ -69,9 +69,3 @@ extension Managed where Self: NSManagedObject {
         return nil
     }
 }
-
-struct LoadAndStoreConfiguration {
-    let context: NSManagedObjectContext
-    let group = DispatchGroup()
-    let session = URLSession.shared
-}

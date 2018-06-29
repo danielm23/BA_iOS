@@ -43,8 +43,8 @@ extension Message: Managed {
         Webservice().load(resource: JsonSchedule.getMessages(of: scheduleId), session: config.session) { messages in
             for message in messages! {
                 print(message)
-                config.context.performChanges {
-                    let _ = Message.insert(into: config.context, json: message)
+                config.context?.performChanges {
+                    let _ = Message.insert(into: config.context!, json: message)
                 }
             }
         }
