@@ -27,6 +27,7 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        self.dataSource.collectionView.reloadData()
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
@@ -38,9 +39,6 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
     func setupCollectionView() {
         let layout = collectionView?.collectionViewLayout as! UICollectionViewFlowLayout
         layout.itemSize = CGSize(width: (collectionView?.bounds.width)!, height: BaseRoundedCardCell.cellHeight)
-        
-        
-        
         let request = Schedule.sortedFetchRequest
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
@@ -59,15 +57,16 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
             guard let vc = segue.destination as? ScheduleDetailController else { fatalError("Wrong view controller type") }
             guard let schedule = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
             vc.schedule = schedule
-            vc.managedObjectContext = managedObjectContext
         case .showScanner:
             guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller type") }
             scanner.managedObjectContext = managedObjectContext
-            
+
         }
     }
     
+    // IS THIS NEEDED ?????:
     @IBAction func unwind(_ seque: UIStoryboardSegue) {
+        print("unwind")
         if let sourceVC = seque.source as? ScannerController {
             if let id = sourceVC.qrCode {
                 print(id)
@@ -76,7 +75,6 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         }
     }
     
-    // DID SELECT ITEM AT INDEX PATH
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if let cell = collectionView.cellForItem(at: indexPath) {
             performSegue(withIdentifier: "showScheduleDetail", sender: self)
@@ -88,22 +86,13 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
         
         let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
-        print("before schedule")
         Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after schedule")
         Venue.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after venue")
         Track.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after track")
         Message.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after message")
         Category.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after categories")
         loadConfig.group.notify(queue: .main) {
-            print("before events")
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
-            print("after events")
-            //self.dataSource.collectionView.reloadData()
         }
     }
 }
@@ -113,4 +102,3 @@ extension SchedulesCollectionController: CollectionViewDataSourceDelegate {
         cell.configure(for: object)
     }
 }
-

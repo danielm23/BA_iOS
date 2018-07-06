@@ -58,11 +58,11 @@
         <attribute name="name" attributeType="String" spotlightIndexingEnabled="YES" syncable="YES"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="version" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES" syncable="YES"/>
-        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="schedule" inverseEntity="Category" syncable="YES"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Event" inverseName="schedule" inverseEntity="Event" syncable="YES"/>
-        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Message" inverseName="schedule" inverseEntity="Message" syncable="YES"/>
-        <relationship name="tracks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Track" inverseName="schedule" inverseEntity="Track" syncable="YES"/>
-        <relationship name="venues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Venue" inverseName="schedule" inverseEntity="Venue" syncable="YES"/>
+        <relationship name="categories" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Category" inverseName="schedule" inverseEntity="Category" syncable="YES"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="schedule" inverseEntity="Event" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Message" inverseName="schedule" inverseEntity="Message" syncable="YES"/>
+        <relationship name="tracks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Track" inverseName="schedule" inverseEntity="Track" syncable="YES"/>
+        <relationship name="venues" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Venue" inverseName="schedule" inverseEntity="Venue" syncable="YES"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
@@ -96,10 +96,10 @@
     <elements>
         <element name="Category" positionX="-441" positionY="3987" width="128" height="30"/>
         <element name="Event" positionX="-144" positionY="3837" width="128" height="210"/>
+        <element name="GeoOverview" positionX="-441" positionY="3987" width="128" height="120"/>
         <element name="Message" positionX="-432" positionY="3996" width="128" height="135"/>
         <element name="Schedule" positionX="-378" positionY="4122" width="128" height="225"/>
         <element name="Track" positionX="-441" positionY="3987" width="128" height="105"/>
         <element name="Venue" positionX="-648" positionY="3993" width="128" height="135"/>
-        <element name="GeoOverview" positionX="-441" positionY="3987" width="128" height="120"/>
     </elements>
 </model>

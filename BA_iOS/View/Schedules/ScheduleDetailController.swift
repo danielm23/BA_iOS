@@ -5,16 +5,29 @@ import Down
 
 class ScheduleDetailController: UIViewController {
     
-    var managedObjectContext: NSManagedObjectContext!
+    //var managedObjectContext: NSManagedObjectContext!
     
     fileprivate var observer: ManagedObjectObserver?
+    
+    @IBOutlet weak var label: UILabel!
+    
+    @IBAction func deleteButtonClicked(_ sender: Any) {
+        print("deleteButton clicked")
+        print(schedule.name)
+        
+        schedule.managedObjectContext?.performChanges {
+            self.schedule.managedObjectContext?.delete(self.schedule)
+        }
+        //_ = self.navigationController?.popViewController(animated: true)
+    }
     
     @objc var schedule: Schedule! {
         didSet {
             observer = ManagedObjectObserver(object: schedule) { [unowned self] type in
-                guard type == .update else { return }
-                //let _ = self.navigationController?.popViewController(animated: true)
+                guard type == .delete else { return }
+                _ = self.navigationController?.popViewController(animated: true)
             }
+            // updateViews()
         }
     }
     

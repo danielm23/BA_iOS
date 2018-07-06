@@ -19,6 +19,7 @@ class ScannerController: UIViewController {
     }
     
     var qrCode: String?
+    var insertInProgress: Bool?
     
     @IBOutlet var messageLabel:UILabel!
     @IBOutlet var topbar: UIView!
@@ -44,6 +45,7 @@ class ScannerController: UIViewController {
    
     override func viewDidLoad() {
         super.viewDidLoad()
+        insertInProgress = false
         
         
         // Get the back-facing camera for capturing videos
@@ -134,8 +136,13 @@ class ScannerController: UIViewController {
     
     func loadEntities(ofScheudle id: String) {
         
-        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
+        insertInProgress = true
+
         
+        // SPINNER
+        let sv = UIViewController.displaySpinner(onView: self.view)
+        
+        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
         let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
         print("before schedule")
         Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
@@ -148,13 +155,18 @@ class ScannerController: UIViewController {
         print("after message")
         Category.loadAndStore(identifiedBy: id, config: loadConfig)
         print("after categories")
+        
         loadConfig.group.notify(queue: .main) {
+            
             print("before events")
             loadConfig.group.enter()
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
             loadConfig.group.leave()
             print("after events")
             loadConfig.group.notify(queue: .main) {
+                
+                // REMOVE SPINNER
+                UIViewController.removeSpinner(spinner: sv)
                 self.performSegue(withIdentifier: "unwindFromScanner", sender: self.qrCode)
             }
         }
@@ -184,7 +196,7 @@ extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
             let barCodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj)
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
-            if metadataObj.stringValue != nil {
+            if metadataObj.stringValue != nil && !insertInProgress! {
                 qrCode = metadataObj.stringValue!
                 launchApp(qrCode: qrCode!)
                 //messageLabel.text = metadataObj.stringValue!
@@ -193,4 +205,26 @@ extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 
+extension UIViewController {
+    class func displaySpinner(onView : UIView) -> UIView {
+        let spinnerView = UIView.init(frame: onView.bounds)
+        spinnerView.backgroundColor = UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+        let ai = UIActivityIndicatorView.init(activityIndicatorStyle: .whiteLarge)
+        ai.startAnimating()
+        ai.center = spinnerView.center
+        
+        DispatchQueue.main.async {
+            spinnerView.addSubview(ai)
+            onView.addSubview(spinnerView)
+        }
+        
+        return spinnerView
+    }
+    
+    class func removeSpinner(spinner :UIView) {
+        DispatchQueue.main.async {
+            spinner.removeFromSuperview()
+        }
+    }
+}
 

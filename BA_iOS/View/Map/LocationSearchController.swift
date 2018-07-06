@@ -3,10 +3,10 @@ import CoreData
 import Foundation
 import MapKit
 
-class LocationSearchController : UITableViewController {
+class LocationSearchController: UITableViewController {
     
     var results: [JsonGeoOverview] = []
-    var handleMapSearchDelegate:LocationDisplayHandler? = nil
+    var handleMapSearchDelegate:MapController? = nil
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.count
@@ -20,38 +20,21 @@ class LocationSearchController : UITableViewController {
         return cell
     }
     
-    override  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         let venue = results[indexPath.row]
         if (venue.latitude != nil && venue.longitude != nil) {
+            
+            handleMapSearchDelegate?.selectedLocation = results[indexPath.row]
+            //handleMapSearchDelegate?.chooseButtonStatus()
             handleMapSearchDelegate?.showOnMap(location: venue)
+            
             dismiss(animated: true, completion: nil)
         }
         else { print("no coordinates") }
     }
 }
 
-extension LocationSearchController : UISearchResultsUpdating, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        results.removeAll()
-        if let enteredText = searchBar.text {
-            search(for: getQueryString(for: enteredText))
-        }
-        tableView.reloadData()
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        results.removeAll()
-        tableView.reloadData()
-    }
-    
-    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        results.removeAll()
-        tableView.reloadData()
-        return true
-    }
+extension LocationSearchController {
     
     func getQueryString(for input: String) -> String {
         let queryString = input
@@ -77,5 +60,34 @@ extension LocationSearchController : UISearchResultsUpdating, UISearchBarDelegat
         config.group.notify(queue: .main) {
             self.tableView.reloadData()
         }
+    }
+}
+    
+extension LocationSearchController : UISearchResultsUpdating {
+        
+    func updateSearchResults(for searchController: UISearchController) {
+        // TODO: show live results
+    }
+}
+
+extension LocationSearchController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        results.removeAll()
+        if let enteredText = searchBar.text {
+            search(for: getQueryString(for: enteredText))
+        }
+        tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        results.removeAll()
+        tableView.reloadData()
+    }
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        results.removeAll()
+        tableView.reloadData()
+        return true
     }
 }

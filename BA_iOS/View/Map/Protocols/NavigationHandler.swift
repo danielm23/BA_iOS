@@ -8,6 +8,9 @@ protocol NavigationHandler: class {
 }
 
 extension NavigationHandler {
+    
+    
+    
     func showRoute(from start: CLLocation, to destination: CLLocation) {
 
         let request = MKDirectionsRequest()
@@ -29,7 +32,6 @@ extension NavigationHandler {
                 self?.mapView?.setVisibleMapRect((route?.polyline.boundingMapRect)!,
                                                  edgePadding: edgeInsets,
                                                  animated: true)
-                
             }
             else { print(error.debugDescription) }
         }
