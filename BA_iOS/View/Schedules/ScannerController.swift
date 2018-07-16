@@ -138,44 +138,29 @@ class ScannerController: UIViewController {
         
         insertInProgress = true
 
-        
         // SPINNER
         let sv = UIViewController.displaySpinner(onView: self.view)
         
         // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
-        let loadConfig = LoadAndStoreConfiguration(context: managedObjectContext)
-        print("before schedule")
+        var loadConfig = LoadAndStoreConfiguration()
+        loadConfig.set(mainContext: managedObjectContext)
+        
         Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after schedule")
         Venue.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after venue")
         Track.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after track")
         Message.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after message")
         Category.loadAndStore(identifiedBy: id, config: loadConfig)
-        print("after categories")
         
         loadConfig.group.notify(queue: .main) {
-            
-            print("before events")
-            loadConfig.group.enter()
+            print("end 1")
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
-            loadConfig.group.leave()
-            print("after events")
             loadConfig.group.notify(queue: .main) {
-                
-                // REMOVE SPINNER
+                print("end 2")
                 UIViewController.removeSpinner(spinner: sv)
                 self.performSegue(withIdentifier: "unwindFromScanner", sender: self.qrCode)
             }
         }
     }
-    
-    /*override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        //let destVC: QRCodeViewController = segue.destination as! QRCodeViewController
-        //qrCode = "transmit"
-    }*/
 }
 
 extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {

@@ -5,7 +5,7 @@ import Down
 
 class ScheduleDetailController: UIViewController {
     
-    //var managedObjectContext: NSManagedObjectContext!
+    var managedObjectContext: NSManagedObjectContext!
     
     fileprivate var observer: ManagedObjectObserver?
     
@@ -16,9 +16,8 @@ class ScheduleDetailController: UIViewController {
         print(schedule.name)
         
         schedule.managedObjectContext?.performChanges {
-            self.schedule.managedObjectContext?.delete(self.schedule)
+            self.managedObjectContext?.delete(self.schedule)
         }
-        //_ = self.navigationController?.popViewController(animated: true)
     }
     
     @objc var schedule: Schedule! {
@@ -37,18 +36,17 @@ class ScheduleDetailController: UIViewController {
 
         self.title = schedule.name
         self.navigationController?.navigationBar.prefersLargeTitles = false
-
-        //self.navigationController?.navigationBar.topItem?.title = "abc"
-        //navigationController?.navigationBar.topItem?.title = schedule.name
-        
-        guard let downView = try? DownView(frame: self.view.bounds, markdownString: schedule.info!, didLoadSuccessfully: {
-            // Optional callback for loading finished
-        }) else { return }
-        //view.addSubview(downView)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         //self.navigationController?.navigationBar.prefersLargeTitles = false
+    }
+    
+    @IBAction func updateButtonClicked(_ sender: Any) {
+        var config = LoadAndStoreConfiguration()
+        config.mainContext = managedObjectContext
+        
+        let version = schedule.getVersion(config: config)
     }
 }

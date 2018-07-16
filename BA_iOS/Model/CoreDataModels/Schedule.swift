@@ -54,7 +54,7 @@ extension Schedule: Managed {
         schedule.id = json.id
         schedule.name = json.name
         schedule.info = json.info
-        schedule.version = 1
+        schedule.version = Int32(json.version)
         schedule.isActive = true
         schedule.startDate = json.startDate
         schedule.endDate = json.endDate
@@ -69,10 +69,63 @@ extension Schedule {
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.get(scheduleId), session: config.session) { schedule in
-            config.context?.performChanges {
-                let _ = Schedule.insert(into: config.context!, json: schedule!)
+            config.mainContext?.performChanges {
+                let _ = Schedule.insert(into: config.mainContext!, json: schedule!)
+                print(schedule?.name)
             }
             config.group.leave()
         }
     }
+    
+    func getVersion(config: LoadAndStoreConfiguration) {
+        var newSchedule: JsonSchedule?
+        
+        config.group.enter()
+        Webservice().load(resource: JsonSchedule.get(id), session: config.session) { schedule in
+            newSchedule = schedule
+            config.group.leave()
+        }
+        
+        config.group.notify(queue: .main) {
+            let versionsEqual = newSchedule?.version == Int(self.version)
+            print(newSchedule?.version)
+            print(self.version)
+            
+            print(versionsEqual)
+            
+            if !versionsEqual {
+                config.mainContext?.performChanges {
+                    config.mainContext?.delete(self)
+                    print("deleted")
+                }
+                //self.performUpdate(of: newSchedule!, loadConfig: config)
+            }
+            else {
+                print("no update available")
+            }
+        }
+    }
+    
+    func performUpdate(of schedule: JsonSchedule, loadConfig: LoadAndStoreConfiguration){
+        print("perform update")
+        id = schedule.id
+        print(id)
+        
+        
+        //Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
+        //Venue.loadAndStore(identifiedBy: id, config: loadConfig)
+        //Track.loadAndStore(identifiedBy: id, config: loadConfig)
+        //Message.loadAndStore(identifiedBy: id, config: loadConfig)
+        //Category.loadAndStore(identifiedBy: id, config: loadConfig)
+        
+        //loadConfig.group.notify(queue: .main) {
+            //loadConfig.group.enter()
+            //Event.loadAndStore(identifiedBy: self.id, config: loadConfig)
+            //loadConfig.group.leave()
+            //loadConfig.group.notify(queue: .main) {
+                //print("update finished")
+            //}
+        //}
+    }
+
 }

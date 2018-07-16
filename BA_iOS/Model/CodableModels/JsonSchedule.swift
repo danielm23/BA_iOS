@@ -10,7 +10,7 @@ public class JsonSchedule: Codable {
     var endDate: Date
     
     var isPublic: Bool?
-    var version: Int?
+    var version: Int
     
     init(id: String, name: String, info: String, startDate: Date,
          endDate: Date, isPublic: Bool, version: Int) {

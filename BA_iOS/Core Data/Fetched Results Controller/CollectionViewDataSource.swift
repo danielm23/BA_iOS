@@ -59,8 +59,6 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
         return cell
     }
     
-
-    
     func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
         return fetchedResultsController.object(at: indexPath)
     }

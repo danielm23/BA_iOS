@@ -54,10 +54,15 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
         mapView?.mapType = .hybrid
         loadGeoInfos()
         
-        
+        print("categories: ")
         for category in event.categories! {
             print(category.title)
+            print(category.isActive)
         }
+        
+        print("has active categories: ")
+        print(event.hasActiveCategories)
+        print(" ")
     }
     
     fileprivate func configureLabels() {
@@ -94,7 +99,7 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
     
     func loadGeoInfos() {
         var config = LoadAndStoreConfiguration()
-        config.context = managedObjectContext
+        config.mainContext = managedObjectContext
         let geoId = event.venue?.geoinformationId
         
         config.group.enter()

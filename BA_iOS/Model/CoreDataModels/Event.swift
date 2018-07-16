@@ -26,6 +26,18 @@ public class Event: NSManagedObject {
     public func switchFavoriteStatus() {
         isFavorite = !isFavorite
     }
+    
+    public var hasActiveCategories: Bool {
+        if (categories?.isEmpty)! {
+            return true
+        }
+        for category in categories! {
+            if category.isActive {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 extension Event: Managed {
@@ -39,6 +51,10 @@ extension Event: Managed {
     }
     
     internal static func insert(into context: NSManagedObjectContext, json: JsonEvent) -> Event {
+        
+        var config = LoadAndStoreConfiguration()
+        config.set(mainContext: context)
+        
         let event: Event = context.insertObject()
         
         event.id = json.id!
@@ -48,50 +64,64 @@ extension Event: Managed {
         event.isFavorite = false
         event.startDate = json.startDate
         event.endDate = json.endDate
+        //context.delayedSaveOrRollback(group: config.group)
+        print("EVENT: ")
+        print(event)
+        
         
         let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
         event.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
+        //context.delayedSaveOrRollback(group: config.group)
+
         
         if (json.venueId != nil){
-            print("set venue")
             let venuePredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.venueId!)
             event.venue = Venue.findOrFetch(in: context, matching: venuePredicate)
-            print(event.venue?.name)
+            //context.delayedSaveOrRollback(group: config.group)
         }
         
         if (json.trackId != nil) {
-            print("set track")
             let trackPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.trackId!)
             event.track = Track.findOrFetch(in: context, matching: trackPredicate)
-            print(event.track?.title)
+            //context.delayedSaveOrRollback(group: config.group)
         }
         
-        // set categories
-        var config = LoadAndStoreConfiguration()
-        config.set(context: context)
 
         Webservice().load(resource: JsonEvent.getCategories(of: event.id), session: config.session) { categories in for category in categories! {
-                //print(category.id)
+            let eventPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.id!)
+            let evt = Event.findOrFetch(in: context, matching: eventPredicate)
+            
+            
+                print(evt)
+                print("cat id: ")
+                print(category.id)
                 let categoryPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), category.id)
                 let newCategory = Category.findOrFetch(in: context, matching: categoryPredicate)
+            
+                print("old categories: ")
+                print(event.categories)
                 print("new category: ")
                 print(newCategory)
-                let x = event.categories?.insert(newCategory!)
-                print(x)
+                evt?.categories?.insert(newCategory!)
+                context.delayedSaveOrRollback(group: config.group)
+                //print(x)
             }
         }
-        print("inserted: ")
-        print(event)
+        //print("inserted: ")
+        //print(event)
         return event
     }
     
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
+        config.group.enter()
         Webservice().load(resource: JsonSchedule.getEvents(of: scheduleId), session: config.session) { events in
             for event in events! {
-                config.context?.performChanges {
-                    let _ = Event.insert(into: config.context!, json: event)
+                config.mainContext?.performChanges {
+                    let _ = Event.insert(into: config.mainContext!, json: event)
+                    print(event)
                 }
             }
+            config.group.leave()
         }
     }
 }

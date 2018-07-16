@@ -45,8 +45,9 @@ extension Venue: Managed {
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.getVenues(of: scheduleId), session: config.session) { venues in for venue in venues! {
-            config.context?.performChanges {
-                let _ = Venue.insert(into: config.context!, json: venue)
+            config.mainContext?.performChanges {
+                let _ = Venue.insert(into: config.mainContext!, json: venue)
+                print(venue.name)
                 }
             }
             config.group.leave()

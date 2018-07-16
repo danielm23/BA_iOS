@@ -28,8 +28,16 @@ class MapController: UIViewController {
         removeLocation()
         detailVC = storyboard!.instantiateViewController(
             withIdentifier: "MapDetailController") as? MapDetailController
+        loadMessages()
+    }
+    
+    func loadMessages() {
+        let tbc = self.tabBarController as! TabBarController
+        tbc.loadAndCountMessages()
     }
 }
+
+
 
 extension MapController: CLLocationManagerDelegate {
     

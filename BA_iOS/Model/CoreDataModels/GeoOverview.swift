@@ -40,8 +40,8 @@ extension GeoOverview: Managed {
         config.group.enter()
         Webservice().load(resource: JsonGeoOverview.get(of: geoinformationId),
                           session: config.session) { overview in
-            config.context?.performChanges {
-                let _ = GeoOverview.insert(into: config.context!, json: overview!)
+            config.mainContext?.performChanges {
+                let _ = GeoOverview.insert(into: config.mainContext!, json: overview!)
             }
             config.group.leave()
         }

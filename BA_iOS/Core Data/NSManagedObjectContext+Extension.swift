@@ -3,6 +3,7 @@ import CoreData
 extension NSManagedObjectContext {
     
     func insertObject<A: NSManagedObject>() -> A where A: Managed {
+        //print("insert object")
         guard let obj = NSEntityDescription.insertNewObject(forEntityName: A.entityName, into: self) as? A else { fatalError("Wrong object type") }
         return obj
     }
@@ -13,6 +14,7 @@ extension NSManagedObjectContext {
             print("SAVE")
             return true
         } catch {
+            print("ROLLBACK")
             rollback()
             return false
         }
@@ -20,7 +22,7 @@ extension NSManagedObjectContext {
     
     func performChanges(block: @escaping () -> ()) {
         perform {
-            print("performChanges")
+            //print("performChanges")
             block()
             _ = self.saveOrRollback()
         }

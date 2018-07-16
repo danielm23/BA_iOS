@@ -7,6 +7,7 @@ public class Category: NSManagedObject {
     @NSManaged fileprivate(set) var id: Int32
     @NSManaged fileprivate(set) var title: String
     @NSManaged fileprivate(set) var color: Int64
+    @NSManaged fileprivate(set) var isActive: Bool
     
     @NSManaged public fileprivate(set) var schedule: Schedule?
     @NSManaged fileprivate(set) var events: Set<Event>?
@@ -19,6 +20,7 @@ extension Category: Managed {
         return "Category"
     }
     
+    
     static var defaultSortDescriptors: [NSSortDescriptor] {
         return [NSSortDescriptor(key: #keyPath(title), ascending: true)]
     }
@@ -28,6 +30,7 @@ extension Category: Managed {
         
         category.id = Int32(json.id)
         category.title = json.name
+        category.isActive = true
         
         let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
         category.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
@@ -39,11 +42,16 @@ extension Category: Managed {
         config.group.enter()
         Webservice().load(resource: JsonSchedule.getCategories(of: scheduleId), session: config.session) { categories in for category in categories! {
                 print(category)
-            config.context?.performChanges {
-                let _ = Category.insert(into: config.context!, json: category)
+            config.mainContext?.performChanges {
+                let _ = Category.insert(into: config.mainContext!, json: category)
                 }
             }
             config.group.leave()
         }
+    }
+    
+    public func setActive() {
+        isActive = !isActive
+        print(isActive)
     }
 }
