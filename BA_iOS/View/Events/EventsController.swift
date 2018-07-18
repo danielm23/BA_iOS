@@ -1,129 +1,137 @@
 import UIKit
 import Foundation
-//import RxSwift
-//import RxCocoa
 import CoreData
 
 class EventsController: UIViewController, SegueHandler {
-    
-    
     
     enum SegueIdentifier: String {
         case showEventDetail = "showEventDetail"
         case showFilter = "showFilter"
     }
     
+    // UI
     @IBOutlet weak var eventsTableView: UITableView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    var refresh: UIRefreshControl?
     
+    // references
     fileprivate var dataSource: TableViewDataSource<EventsController>!
-    
     var managedObjectContext: NSManagedObjectContext!
     var syncContext: NSManagedObjectContext?
 
-    
+    // filter predicates
     var activeSchedules: NSPredicate? = nil
     var favoriteEvents: NSPredicate? = nil
     var activeCategories: NSPredicate? = nil
     var predicates: [NSPredicate] = []
     var schedulePredicate: NSCompoundPredicate? = nil
     
-    var refresh: UIRefreshControl?
-
-
+    
     @IBAction func segmentedControllerChange(_ sender: Any) {
         switch segmentedControl.selectedSegmentIndex {
-        case 1:
-            predicates = [activeSchedules ,favoriteEvents] as! [NSPredicate]
-        default:
-            predicates = [activeSchedules] as! [NSPredicate]
+        case 1: predicates = [activeSchedules ,favoriteEvents] as! [NSPredicate]
+        default: predicates = [activeSchedules] as! [NSPredicate]
         }
-        setupTableView()
+        configureTableView()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("did load")
-        
         self.navigationController?.navigationBar.topItem?.title = "Nachrichten"
-
-
+        configureContexts()
+        configurePredicates()
+        configurePullToRefresh()
+        configureTableView()
+    }
+    
+    func configureContexts() {
         if managedObjectContext == nil {
             managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
+            managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         }
         if syncContext == nil {
             syncContext = (self.tabBarController as! TabBarController).syncContext
+            syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         }
-        
-        managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
         syncContext?.addContextDidSaveNotificationObserver { [weak self] note in
             self?.managedObjectContext.performMergeChanges(from: note)
         }
-        
+    }
+    
+    fileprivate func configurePredicates() {
         activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
         activeCategories = NSPredicate(format: "ANY categories.isActive == true || categories.@count = 0")
-        print(activeCategories)
-        
         predicates = [activeSchedules, activeCategories] as! [NSPredicate]
-        
+    }
+    
+    fileprivate func configurePullToRefresh() {
         refresh = UIRefreshControl()
         refresh?.addTarget(self, action:  #selector(handleRefresh(_:)), for: UIControlEvents.valueChanged)
         refresh?.attributedTitle = NSAttributedString(string: "Lade Updates ...")
         eventsTableView.refreshControl = refresh!
-        
-        setupTableView()
-        //dataSource.updateFetch()
     }
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
-        print("refresh")
-        
         var config = LoadAndStoreConfiguration()
         config.set(syncContext: managedObjectContext)
         config.set(mainContext: syncContext!)
-        
-        let schedules = getSchedules(from: config.syncContext!)
+        checkForUpdate(config: config)
+    }
+    
+    func checkForUpdate(config: LoadAndStoreConfiguration) {
+        let schedules = Schedule.loadCurrentSchedules(from: config.syncContext!)
         
         for schedule in schedules! {
+            var newSchedule: JsonSchedule?
             
-            Schedule.loadAndStore(identifiedBy: schedule.id, config: config)
-            Venue.loadAndStore(identifiedBy: schedule.id, config: config)
-            Track.loadAndStore(identifiedBy: schedule.id, config: config)
-            Message.loadAndStore(identifiedBy: schedule.id, config: config)
-            Category.loadAndStore(identifiedBy: schedule.id, config: config)
+            config.group.enter()
+            Webservice().load(resource: JsonSchedule.get(schedule.id),
+                              session: config.session) { schedule in
+                newSchedule = schedule
+                config.group.leave()
+            }
             
             config.group.notify(queue: .main) {
-                print("end 1")
-                print("load events now")
-                Event.loadAndStore(identifiedBy: schedule.id, config: config)
-                config.mainContext?.delayedSaveOrRollback(group: config.group)
-                config.group.notify(queue: .main) {
-                    print("end 2")
-                    self.refresh?.endRefreshing()
+                let versionsEqual = newSchedule?.version == Int(schedule.version)
+                print("new: ")
+                print(newSchedule?.version)
+                print("current: ")
+                print(schedule.version)
+                print(versionsEqual)
+                
+                switch !versionsEqual {
+                    case true: print("update available")
+                    case false: print("no update available")
                 }
             }
         }
     }
-    
-    func getSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
-        let request = Schedule.sortedFetchRequest
-        request.returnsObjectsAsFaults = false
-        let schedules = try! context.fetch(request)
+
+    func performUpdate(config: LoadAndStoreConfiguration, scheduleId: String) {
         
-        return schedules
-    }
-    
-    func loadMessages() {
-        let tbc = self.tabBarController as! TabBarController
-        tbc.loadAndCountMessages()
+        Schedule.loadAndStore(identifiedBy: scheduleId, config: config)
+        Venue.loadAndStore(identifiedBy: scheduleId, config: config)
+        Track.loadAndStore(identifiedBy: scheduleId, config: config)
+        Message.loadAndStore(identifiedBy: scheduleId, config: config)
+        Category.loadAndStore(identifiedBy: scheduleId, config: config)
+        
+        config.group.notify(queue: .main) {
+            Event.loadAndStore(identifiedBy: scheduleId, config: config)
+            config.mainContext?.delayedSaveOrRollback(group: config.group)
+            config.group.notify(queue: .main) {
+                self.refresh?.endRefreshing()
+            }
+        }
     }
 
-    fileprivate func setupTableView() {
+    func loadMessages() {
+        let tabBarController = self.tabBarController as! TabBarController
+        tabBarController.loadAndCountMessages()
+    }
+
+    fileprivate func configureTableView() {
         schedulePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        print(schedulePredicate)
         let request = Event.sortedFetchRequest(with: schedulePredicate!)
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
@@ -133,16 +141,8 @@ class EventsController: UIViewController, SegueHandler {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("did appear")
-        setupTableView()
+        configureTableView()
         loadMessages()
-
-        
-        do {
-            //try dataSource.fetchedResultsController.performFetch()
-            print("update")
-            
-        } catch { fatalError("fetch request failed") }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -151,11 +151,9 @@ class EventsController: UIViewController, SegueHandler {
         case .showEventDetail:
             guard let vc = segue.destination as? EventDetailController else { fatalError("Wrong view controller type") }
             guard let event = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
-            //vc.managedObjectContext = managedObjectContext
             vc.event = event
         case .showFilter:
             guard let vc = segue.destination as? NewFilterController else { fatalError("Wrong view controller type") }
-            //vc.managedObjectContext = managedObjectContext
         }
     }
 }
@@ -165,4 +163,3 @@ extension EventsController: TableViewDataSourceDelegate {
             cell.configure(for: object)
     }
 }
-

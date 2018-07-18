@@ -119,7 +119,7 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
         dispatchGrpup.enter()
         guard let controller = self.tabBarController else { return }
         let navInstance = controller.childViewControllers[2] as! UINavigationController
-        var dest = navInstance.childViewControllers[0] as! MapController
+        let dest = navInstance.childViewControllers[0] as! MapController
         controller.selectedIndex = 2
         dest.selectedLocation = selectedLocation
         dispatchGrpup.leave()

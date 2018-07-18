@@ -11,7 +11,6 @@ class TabBarController: UITabBarController {
     var managedObjectContext: NSManagedObjectContext?
     var syncContext: NSManagedObjectContext?
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
@@ -24,7 +23,6 @@ class TabBarController: UITabBarController {
     }
     
     func loadAndCountMessages() {
-        print("load and count messages")
         loadMessages()
         countMessages()
     }
@@ -49,7 +47,7 @@ class TabBarController: UITabBarController {
 
         let activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         let newMessages = NSPredicate(format: "isNew == %@", NSNumber(value: true))
-        let predicates = [activeSchedules, newMessages] as! [NSPredicate]
+        let predicates = [activeSchedules, newMessages] 
         let messagePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         let request = Message.sortedFetchRequest(with: messagePredicate)
         request.returnsObjectsAsFaults = true
@@ -81,12 +79,12 @@ class TabBarController: UITabBarController {
             config.group.enter()
             Webservice().load(resource: JsonSchedule.getMessages(of: schedule.id),
                               session: config.session) { messages in
-                                for message in messages! {
-                                    insertedMessageIds.insert(message.id)
-                                    let _ = Message.insert(into: config.syncContext!, json: message)
-                                    config.syncContext?.delayedSaveOrRollback(group: config.group)
-                                }
-                                config.group.leave()
+                for message in messages! {
+                    insertedMessageIds.insert(message.id)
+                    let _ = Message.insert(into: config.syncContext!, json: message)
+                    config.syncContext?.delayedSaveOrRollback(group: config.group)
+                }
+                config.group.leave()
             }
         }
         
@@ -104,12 +102,6 @@ class TabBarController: UITabBarController {
             }
         }
     }
-    
-    
-    
-    
-    
-    
 }
 
 

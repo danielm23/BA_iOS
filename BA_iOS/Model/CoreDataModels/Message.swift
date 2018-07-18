@@ -13,7 +13,6 @@ public class Message: NSManagedObject {
     @NSManaged fileprivate(set) var created: Date
     
     @NSManaged public fileprivate(set) var schedule: Schedule?
-
 }
 
 extension Message {

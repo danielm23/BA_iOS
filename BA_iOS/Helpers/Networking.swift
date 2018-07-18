@@ -1,9 +1,5 @@
 import Foundation
 
-enum APIUrl {
-    
-}
-
 struct Resource<A> {
     let url: URL
     let parse: (Data) -> A?
@@ -19,7 +15,6 @@ extension Resource where A: Decodable {
         urlComponents.host = Webservice.baseHost
         urlComponents.path = "/api/" + url
         
-        print(querys)
         if (querys != nil) {
             urlComponents.queryItems = querys
         }
@@ -36,13 +31,12 @@ final class Webservice {
     func load<A>(resource: Resource<A>, session: URLSession, completion: @escaping (A?) -> ()) {
         session.dataTask(with: resource.url) { data, _, _ in
             guard let data = data
-                else {
+            else {
                 completion(nil)
-                print("Error")
                 return
             }
             completion(resource.parse(data))
-            }.resume()
+        }.resume()
     }
 }
 

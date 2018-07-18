@@ -10,7 +10,7 @@ class MapController: UIViewController {
     
     // Outlets
     @IBOutlet var mapView: MKMapView?
-    var detailVC: MapDetailController?
+    var mapDetailController: MapDetailController?
 
     // Responsibilities
     let locationManager = CLLocationManager()
@@ -26,23 +26,18 @@ class MapController: UIViewController {
         configureLocationManager()
         configureSearchController()
         removeLocation()
-        detailVC = storyboard!.instantiateViewController(
-            withIdentifier: "MapDetailController") as? MapDetailController
         loadMessages()
     }
     
     func loadMessages() {
-        let tbc = self.tabBarController as! TabBarController
-        tbc.loadAndCountMessages()
+        let tabBarController = self.tabBarController as! TabBarController
+        tabBarController.loadAndCountMessages()
     }
 }
-
-
 
 extension MapController: CLLocationManagerDelegate {
     
     func configureLocationManager() {
-        print("configureLocationManager")
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
@@ -59,16 +54,17 @@ extension MapController: CLLocationManagerDelegate {
 extension MapController: MKMapViewDelegate {
     
     func configureMapView() {
-        print("configMapView")
         mapView?.delegate = self
         mapView?.mapType = .hybrid
+        mapDetailController = storyboard!.instantiateViewController(
+            withIdentifier: "MapDetailController") as? MapDetailController
+        
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let renderer = MKPolylineRenderer(overlay: overlay)
         renderer.strokeColor = UIColor.blue
         renderer.lineWidth = 4.5
-        print("renderer applied")
         return renderer
     }
 }
@@ -87,7 +83,7 @@ extension MapController: UISearchControllerDelegate {
         searchController?.delegate = self
         searchController?.obscuresBackgroundDuringPresentation = true
         searchController?.searchBar.delegate = locationSearchController
-        searchController?.searchBar.placeholder = "Search Locations"
+        searchController?.searchBar.placeholder = "Suche Orte"
         
         navigationItem.searchController = searchController
         definesPresentationContext = true
@@ -100,7 +96,7 @@ extension MapController: LocationDisplayHandler {
     
     func setInformation(forLocation location: JsonGeoOverview) {
         addInformationOverlay()
-        detailVC?.titleLabel.text = location.title
+        mapDetailController?.titleLabel.text = location.title
     }
 }
 
@@ -114,11 +110,11 @@ extension MapController: NavigationHandler {
 
 extension MapController {
     func addInformationOverlay() {
-        detailVC?.handleNavigationButtonDelegate = self
-        self.addChildViewController(detailVC!)
-        self.view.addSubview((detailVC?.view)!)
-        detailVC?.didMove(toParentViewController: self)
-        detailVC?.view.frame = CGRect(x: 0, y: self.view.frame.maxY,
+        mapDetailController?.handleNavigationButtonDelegate = self
+        self.addChildViewController(mapDetailController!)
+        self.view.addSubview((mapDetailController?.view)!)
+        mapDetailController?.didMove(toParentViewController: self)
+        mapDetailController?.view.frame = CGRect(x: 0, y: self.view.frame.maxY,
                                       width: view.frame.width, height: view.frame.height)
     }
     

@@ -13,11 +13,6 @@ import CoreData
 class ScannerController: UIViewController {
     
     var managedObjectContext: NSManagedObjectContext!
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return UIStatusBarStyle.lightContent
-    }
-    
     var qrCode: String?
     var insertInProgress: Bool?
     
@@ -25,7 +20,6 @@ class ScannerController: UIViewController {
     @IBOutlet var topbar: UIView!
     
     var captureSession = AVCaptureSession()
-    
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
     var qrCodeFrameView: UIView?
 
@@ -42,56 +36,41 @@ class ScannerController: UIViewController {
                                       AVMetadataObject.ObjectType.dataMatrix,
                                       AVMetadataObject.ObjectType.interleaved2of5,
                                       AVMetadataObject.ObjectType.qr]
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+                                        return UIStatusBarStyle.lightContent
+    }
    
     override func viewDidLoad() {
         super.viewDidLoad()
         insertInProgress = false
-        
-        
-        // Get the back-facing camera for capturing videos
-        let deviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
-        
-        guard let captureDevice = deviceDiscoverySession.devices.first else {
-            print("Failed to get the camera device")
-            return
-        }
+
+        let cameraDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: AVMediaType.video, position: .back)
+        let captureDevice = cameraDiscoverySession.devices.first
         
         do {
-            // Get an instance of the AVCaptureDeviceInput class using the previous device object.
-            let input = try AVCaptureDeviceInput(device: captureDevice)
-            
-            // Set the input device on the capture session.
+            let input = try AVCaptureDeviceInput(device: captureDevice!)
             captureSession.addInput(input)
-            
-            // Initialize a AVCaptureMetadataOutput object and set it as the output device to the capture session.
             let captureMetadataOutput = AVCaptureMetadataOutput()
             captureSession.addOutput(captureMetadataOutput)
             
-            // Set delegate and use the default dispatch queue to execute the call back
             captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
             captureMetadataOutput.metadataObjectTypes = supportedCodeTypes
-//            captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.qr]
-            
         } catch {
-            // If any error occurs, simply print it out and don't continue any more.
             print(error)
             return
         }
         
-        // Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
         videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         videoPreviewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer?.frame = view.layer.bounds
         view.layer.addSublayer(videoPreviewLayer!)
         
-        // Start video capture.
         captureSession.startRunning()
         
-        // Move the message label and top bar to the front
         view.bringSubview(toFront: messageLabel)
         view.bringSubview(toFront: topbar)
         
-        // Initialize QR Code Frame to highlight the QR code
         qrCodeFrameView = UIView()
         
         if let qrCodeFrameView = qrCodeFrameView {
@@ -106,16 +85,8 @@ class ScannerController: UIViewController {
         super.viewWillDisappear(animated)
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.default
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    // MARK: - Helper methods
 
     func launchApp(qrCode: String) {
-        
         if presentedViewController != nil {
             return
         }
@@ -127,7 +98,6 @@ class ScannerController: UIViewController {
         })
         
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
-        
         alertPrompt.addAction(confirmAction)
         alertPrompt.addAction(cancelAction)
         
@@ -135,13 +105,8 @@ class ScannerController: UIViewController {
     }
     
     func loadEntities(ofScheudle id: String) {
-        
         insertInProgress = true
-
-        // SPINNER
         let sv = UIViewController.displaySpinner(onView: self.view)
-        
-        // ALLWAYS USE LOCALHOST TUNNEL WHILE DEVELOPMENT
         var loadConfig = LoadAndStoreConfiguration()
         loadConfig.set(mainContext: managedObjectContext)
         
@@ -152,10 +117,8 @@ class ScannerController: UIViewController {
         Category.loadAndStore(identifiedBy: id, config: loadConfig)
         
         loadConfig.group.notify(queue: .main) {
-            print("end 1")
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
             loadConfig.group.notify(queue: .main) {
-                print("end 2")
                 UIViewController.removeSpinner(spinner: sv)
                 self.performSegue(withIdentifier: "unwindFromScanner", sender: self.qrCode)
             }
@@ -164,7 +127,6 @@ class ScannerController: UIViewController {
 }
 
 extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
-    
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects.count == 0 {
@@ -190,26 +152,4 @@ extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
     }
 }
 
-extension UIViewController {
-    class func displaySpinner(onView : UIView) -> UIView {
-        let spinnerView = UIView.init(frame: onView.bounds)
-        spinnerView.backgroundColor = UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
-        let ai = UIActivityIndicatorView.init(activityIndicatorStyle: .whiteLarge)
-        ai.startAnimating()
-        ai.center = spinnerView.center
-        
-        DispatchQueue.main.async {
-            spinnerView.addSubview(ai)
-            onView.addSubview(spinnerView)
-        }
-        
-        return spinnerView
-    }
-    
-    class func removeSpinner(spinner :UIView) {
-        DispatchQueue.main.async {
-            spinner.removeFromSuperview()
-        }
-    }
-}
 

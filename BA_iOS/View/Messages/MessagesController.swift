@@ -8,66 +8,56 @@ class MessagesController: UITableViewController {
     var managedObjectContext: NSManagedObjectContext!
     var syncContext: NSManagedObjectContext?
     
-    
     fileprivate var dataSource: TableViewDataSource<MessagesController>!
-    
     fileprivate var observer: ManagedObjectObserver?
     
     var refresh: UIRefreshControl?
-    
-   
-    
-    // var syncGroup: DispatchGroup?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if managedObjectContext == nil {
-            managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
-        }
-        if syncContext == nil {
-            syncContext = (self.tabBarController as! TabBarController).syncContext
-        }
-        
-        managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
-        syncContext?.addContextDidSaveNotificationObserver { [weak self] note in
-            self?.managedObjectContext.performMergeChanges(from: note)
-        }
-        
-        refresh = UIRefreshControl()
-        refresh?.addTarget(self, action:  #selector(handleRefresh(_:)), for: UIControlEvents.valueChanged)
-        refresh?.attributedTitle = NSAttributedString(string: "Lade neue Nachrichten ...")
-        self.tableView.refreshControl = refresh!
-
-        setupTableView()
-        //self.tableView.addSubview(self.refresh!)
-        //view.insertSubview(refresh!, at: 0)
+        configureContexts()
+        configurePullToRefresh()
+        self.title = "Nachrichten"
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        setupTableView()
-        markAsViewd()
+        configureTableView()
+        markAsViewed()
         self.tabBarController?.childViewControllers[3].tabBarItem.badgeValue = nil
     }
     
-    func markAsViewd() {
+    func configureContexts() {
+        if managedObjectContext == nil {
+            managedObjectContext = (self.tabBarController as! TabBarController).managedObjectContext
+            managedObjectContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        }
+        if syncContext == nil {
+            syncContext = (self.tabBarController as! TabBarController).syncContext
+            syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        }
+        syncContext?.addContextDidSaveNotificationObserver { [weak self] note in
+            self?.managedObjectContext.performMergeChanges(from: note)
+        }
+    }
+    
+    fileprivate func configurePullToRefresh() {
+        refresh = UIRefreshControl()
+        refresh?.addTarget(self, action:  #selector(handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        refresh?.attributedTitle = NSAttributedString(string: "Lade neue Nachrichten ...")
+        self.tableView.refreshControl = refresh!
+    }
+    
+    func markAsViewed() {
         let currentMessages = dataSource.fetchedResultsController.fetchedObjects
-        
-        for msg in currentMessages! {
+        for message in currentMessages! {
             managedObjectContext.performChanges {
-                msg.setAsViewed()
+                message.setAsViewed()
             }
         }
     }
     
-    func setupTableView() {
-        
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.navigationBar.topItem?.title = "Nachrichten"
-        
+    func configureTableView() {
         let activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
         let request = Message.sortedFetchRequest(with: activeSchedules)
         request.fetchBatchSize = 20
@@ -75,12 +65,9 @@ class MessagesController: UITableViewController {
 
         let frc = NSFetchedResultsController(fetchRequest: request,
                                              managedObjectContext: managedObjectContext,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: nil)
-        dataSource = TableViewDataSource(tableView: tableView,
-                                         cellIdentifier: "MessageCell",
-                                         fetchedResultsController: frc,
-                                         delegate: self)
+                                             sectionNameKeyPath: nil, cacheName: nil)
+        dataSource = TableViewDataSource(tableView: tableView, cellIdentifier: "MessageCell",
+                                         fetchedResultsController: frc, delegate: self)
     }
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
@@ -91,17 +78,14 @@ class MessagesController: UITableViewController {
         
         var insertedMessageIds = Set<Int>()
         var currentMessageIds = Set<Int>()
-        
         let currentMessages = dataSource.fetchedResultsController.fetchedObjects
-        
+        let currentSchedules = getSchedules(from: config.mainContext!)
+
         for msg in currentMessages! {
             currentMessageIds.insert(Int(msg.id))
         }
         
-        
-        let schedules = getSchedules(from: config.mainContext!)
-        
-        for schedule in schedules! {
+        for schedule in currentSchedules! {
             config.group.enter()
             Webservice().load(resource: JsonSchedule.getMessages(of: schedule.id),
                               session: config.session) { messages in
@@ -115,20 +99,19 @@ class MessagesController: UITableViewController {
         }
         
         config.group.notify(queue: .main) {
-            let deleted = currentMessageIds.subtracting(insertedMessageIds)
+            let deletedMessages = currentMessageIds.subtracting(insertedMessageIds)
            
-            for msgId in deleted {
-                let msgPredicate = NSPredicate(format: "%K == %d", "id", Int32(msgId))
-                let msg = Message.findOrFetch(in: config.mainContext!, matching: msgPredicate)
+            for messageId in deletedMessages {
+                let messagePredicate = NSPredicate(format: "%K == %d", "id", Int32(messageId))
+                let messageToDelete = Message.findOrFetch(in: config.mainContext!, matching: messagePredicate)
 
                 config.mainContext!.performChanges {
-                    config.mainContext!.delete(msg!)
+                    config.mainContext!.delete(messageToDelete!)
                 }
             }
             self.refresh?.endRefreshing()
         }
     }
-
 
     func getSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
         let request = Schedule.sortedFetchRequest
@@ -137,8 +120,6 @@ class MessagesController: UITableViewController {
         
         return schedules
     }
-    
-    
 }
 
 extension MessagesController: TableViewDataSourceDelegate {

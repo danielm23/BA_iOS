@@ -77,55 +77,17 @@ extension Schedule {
         }
     }
     
-    func getVersion(config: LoadAndStoreConfiguration) {
-        var newSchedule: JsonSchedule?
-        
-        config.group.enter()
-        Webservice().load(resource: JsonSchedule.get(id), session: config.session) { schedule in
-            newSchedule = schedule
-            config.group.leave()
-        }
-        
-        config.group.notify(queue: .main) {
-            let versionsEqual = newSchedule?.version == Int(self.version)
-            print(newSchedule?.version)
-            print(self.version)
-            
-            print(versionsEqual)
-            
-            if !versionsEqual {
-                config.mainContext?.performChanges {
-                    config.mainContext?.delete(self)
-                    print("deleted")
-                }
-                //self.performUpdate(of: newSchedule!, loadConfig: config)
-            }
-            else {
-                print("no update available")
-            }
-        }
-    }
     
-    func performUpdate(of schedule: JsonSchedule, loadConfig: LoadAndStoreConfiguration){
-        print("perform update")
-        id = schedule.id
-        print(id)
+    
+    
+
+    
+    static func loadCurrentSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
+        let request = Schedule.sortedFetchRequest
+        request.returnsObjectsAsFaults = false
+        let schedules = try! context.fetch(request)
         
-        
-        //Schedule.loadAndStore(identifiedBy: id, config: loadConfig)
-        //Venue.loadAndStore(identifiedBy: id, config: loadConfig)
-        //Track.loadAndStore(identifiedBy: id, config: loadConfig)
-        //Message.loadAndStore(identifiedBy: id, config: loadConfig)
-        //Category.loadAndStore(identifiedBy: id, config: loadConfig)
-        
-        //loadConfig.group.notify(queue: .main) {
-            //loadConfig.group.enter()
-            //Event.loadAndStore(identifiedBy: self.id, config: loadConfig)
-            //loadConfig.group.leave()
-            //loadConfig.group.notify(queue: .main) {
-                //print("update finished")
-            //}
-        //}
+        return schedules
     }
 
 }

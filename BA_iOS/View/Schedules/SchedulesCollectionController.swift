@@ -4,23 +4,29 @@ import Foundation
 
 class SchedulesCollectionController: UICollectionViewController, SegueHandler {
     
+    var managedObjectContext: NSManagedObjectContext!
+    fileprivate var dataSource: CollectionViewDataSource<SchedulesCollectionController>!
+    fileprivate var observer: ManagedObjectObserver?
+    
+    enum SegueIdentifier: String {
+        case showScheduleDetail = "showScheduleDetail"
+        case showScanner = "showScanner"
+    }
+    
+    /*
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .default
     }
-    
+     */
+    /*
     @IBAction func unwind(_ seque: UIStoryboardSegue) {
-        print("unwind")
         if let sourceVC = seque.source as? ScannerController {
             if let id = sourceVC.qrCode {
                 print(id)
                 //loadEntities(ofScheudle: id)
             }
         }
-    }
-    
-    var managedObjectContext: NSManagedObjectContext!
-    fileprivate var dataSource: CollectionViewDataSource<SchedulesCollectionController>!
-    fileprivate var observer: ManagedObjectObserver?
+    }*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,18 +47,13 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
-    enum SegueIdentifier: String {
-        case showScheduleDetail = "showScheduleDetail"
-        case showScanner = "showScanner"
-    }
-    
     func setupCollectionView() {
         let layout = collectionView?.collectionViewLayout as! UICollectionViewFlowLayout
         layout.itemSize = CGSize(width: (collectionView?.bounds.width)!, height: BaseRoundedCardCell.cellHeight)
         let request = Schedule.sortedFetchRequest
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
-        let schedules = try! managedObjectContext.fetch(request)
+        //let schedules = try! managedObjectContext.fetch(request)
         
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         
@@ -64,16 +65,13 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         switch segueIdentifier(for: segue) {
         case .showScheduleDetail:
             guard let vc = segue.destination as? ScheduleDetailController else { fatalError("Wrong view controller type") }
-            guard let schedule = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
+            guard let schedule = dataSource.selectedObject else { fatalError("Showing detail, but no selected row") }
             vc.schedule = schedule
             vc.managedObjectContext = managedObjectContext
         case .showScanner:
-            guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller type") }
+            guard let scanner = segue.destination as? ScannerController else { fatalError("Wrong view controller") }
             scanner.managedObjectContext = managedObjectContext
-
         }
-        
-
     }
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

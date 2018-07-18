@@ -30,7 +30,6 @@ extension Sequence where Iterator.Element: NSManagedObject {
     }
 }
 
-
 extension NSManagedObjectContext {
     fileprivate var changedObjectsCount: Int {
         return insertedObjects.count + updatedObjects.count + deletedObjects.count

@@ -31,17 +31,13 @@ class MapDetailController: UIViewController {
     }
 
     func configuresSelectedLocationButton() {
-        navigationButton.setTitle("Stop Navigation", for: .normal)
-        navigationButton.setTitle("Start Navigation", for: .selected)
-        
+        navigationButton.setTitle("beenden", for: .normal)
+        navigationButton.setTitle("starten", for: .selected)
         navigationButton.layer.borderWidth = 1.5
         navigationButton.layer.borderColor = navigationButton.tintColor.cgColor
         navigationButton.layer.cornerRadius = 5
-        
         navigationButton.backgroundRect(forBounds: navigationButton.frame)
-        
         navigationButton.isSelected = true
-
     }
     
     func configureCloseButton() {
@@ -51,32 +47,36 @@ class MapDetailController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(panGesture))
-        view.addGestureRecognizer(gesture)
-        
+        addGestureRecognizer()
         configuresSelectedLocationButton()
         configureCloseButton()
-        
         titleLabel.text = titleString
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        prepareBackgroundView()
+        configureBackgroundView()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        animateDetailView()
+    }
+    
+    func animateDetailView() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             let frame = self?.view.frame
-            let yComponent = UIScreen.main.bounds.height - 150
-            self?.view.frame = CGRect(x:0, y: yComponent, width: frame!.width, height: frame!.height)
+            let yPosition = UIScreen.main.bounds.height - 150
+            self?.view.frame = CGRect(x:0, y: yPosition, width: frame!.width, height: frame!.height)
         }
     }
-
-    func prepareBackgroundView(){
+    
+    func addGestureRecognizer() {
+        let gesture = UIPanGestureRecognizer.init(target: self, action: #selector(panGesture))
+        view.addGestureRecognizer(gesture)
+    }
+    
+    func configureBackgroundView(){
         let blurEffect = UIBlurEffect.init(style: .dark)
         let visualEffect = UIVisualEffectView.init(effect: blurEffect)
         let bluredView = UIVisualEffectView.init(effect: blurEffect)
@@ -88,10 +88,13 @@ class MapDetailController: UIViewController {
 
     @objc func panGesture(recognizer: UIPanGestureRecognizer) {
         let y = self.view.frame.minY
+        let upperLimitForViewPosition = CGFloat(1180)
+        let lowerLimitForViewPosition = CGFloat(980)
         let translation = recognizer.translation(in: self.view)
-        let newPostition = CGRect(x: 0, y: y + translation.y, width: view.frame.width, height: view.frame.height)
-        if (980 <= newPostition.maxY && newPostition.maxY <= 1180) {
-            self.view.frame = newPostition
+        let newViewPostition = CGRect(x: 0, y: y + translation.y, width: view.frame.width, height: view.frame.height)
+        
+        if (lowerLimitForViewPosition <= newViewPostition.maxY && upperLimitForViewPosition <= 1180) {
+            self.view.frame = newViewPostition
             recognizer.setTranslation(CGPoint.zero, in: self.view)
         }
     }

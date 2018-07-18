@@ -22,7 +22,6 @@ extension NSManagedObjectContext {
     
     func performChanges(block: @escaping () -> ()) {
         perform {
-            //print("performChanges")
             block()
             _ = self.saveOrRollback()
         }

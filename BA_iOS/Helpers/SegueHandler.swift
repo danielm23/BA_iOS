@@ -1,11 +1,3 @@
-//
-//  SegueHandler.swift
-//  Moody
-//
-//  Created by Florian on 12/06/15.
-//  Copyright © 2015 objc.io. All rights reserved.
-//
-
 import UIKit
 
 protocol SegueHandler {

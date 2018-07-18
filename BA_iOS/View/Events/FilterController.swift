@@ -20,7 +20,7 @@ class FilterController: UITableViewController {
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
         
-        let schedules = try! managedObjectContext.fetch(request)
+        //let schedules = try! managedObjectContext.fetch(request)
         let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         dataSource = TableViewDataSource(tableView: tableView, cellIdentifier: "ScheduleFilterCell", fetchedResultsController: frc, delegate: self)
     }

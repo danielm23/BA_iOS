@@ -3,5 +3,4 @@ use_frameworks!
 workspace 'BA_iOS'
 
 target 'BA_iOS' do
-    pod 'Down'
 end

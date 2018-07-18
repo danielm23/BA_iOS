@@ -13,7 +13,6 @@ class LocationSearchController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "locationSearchCell",
                                                  for: indexPath) as! LocationSearchCell
         cell.configure(for: results[indexPath.row])
@@ -23,11 +22,8 @@ class LocationSearchController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         let venue = results[indexPath.row]
         if (venue.latitude != nil && venue.longitude != nil) {
-            
             handleMapSearchDelegate?.selectedLocation = results[indexPath.row]
-            //handleMapSearchDelegate?.chooseButtonStatus()
             handleMapSearchDelegate?.showOnMap(location: venue)
-            
             dismiss(animated: true, completion: nil)
         }
         else { print("no coordinates") }
@@ -45,7 +41,6 @@ extension LocationSearchController {
     }
     
     func search(for searchTerm: String) {
-        
         let config = LoadAndStoreConfiguration()
         config.group.enter()
         
