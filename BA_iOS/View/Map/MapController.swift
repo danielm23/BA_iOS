@@ -72,7 +72,6 @@ extension MapController: MKMapViewDelegate {
 extension MapController: UISearchControllerDelegate {
     
     func configureSearchController() {
-        print("configSerchController")
         let locationSearchController = storyboard!
             .instantiateViewController(withIdentifier: "LocationSearchController")
             as! LocationSearchController

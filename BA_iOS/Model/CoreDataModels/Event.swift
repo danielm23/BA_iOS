@@ -91,7 +91,6 @@ extension Event: Managed {
             let eventPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.id!)
             let evt = Event.findOrFetch(in: context, matching: eventPredicate)
             
-            
                 print(evt)
                 print("cat id: ")
                 print(category.id)

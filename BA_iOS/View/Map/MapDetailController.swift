@@ -93,7 +93,8 @@ class MapDetailController: UIViewController {
         let translation = recognizer.translation(in: self.view)
         let newViewPostition = CGRect(x: 0, y: y + translation.y, width: view.frame.width, height: view.frame.height)
         
-        if (lowerLimitForViewPosition <= newViewPostition.maxY && upperLimitForViewPosition <= 1180) {
+        if (lowerLimitForViewPosition <= newViewPostition.maxY &&
+            newViewPostition.maxY <= upperLimitForViewPosition) {
             self.view.frame = newViewPostition
             recognizer.setTranslation(CGPoint.zero, in: self.view)
         }

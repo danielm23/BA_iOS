@@ -71,17 +71,12 @@ extension Schedule {
         Webservice().load(resource: JsonSchedule.get(scheduleId), session: config.session) { schedule in
             config.mainContext?.performChanges {
                 let _ = Schedule.insert(into: config.mainContext!, json: schedule!)
-                print(schedule?.name)
             }
             config.group.leave()
         }
     }
     
-    
-    
-    
 
-    
     static func loadCurrentSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
         let request = Schedule.sortedFetchRequest
         request.returnsObjectsAsFaults = false

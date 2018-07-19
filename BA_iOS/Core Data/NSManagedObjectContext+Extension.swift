@@ -11,10 +11,8 @@ extension NSManagedObjectContext {
     func saveOrRollback() -> Bool {
         do {
             try save()
-            print("SAVE")
             return true
         } catch {
-            print("ROLLBACK")
             rollback()
             return false
         }

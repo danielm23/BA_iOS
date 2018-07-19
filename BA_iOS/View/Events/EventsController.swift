@@ -82,9 +82,9 @@ class EventsController: UIViewController, SegueHandler {
     func checkForUpdate(config: LoadAndStoreConfiguration) {
         let schedules = Schedule.loadCurrentSchedules(from: config.syncContext!)
         
+        config.group.enter()
         for schedule in schedules! {
             var newSchedule: JsonSchedule?
-            
             config.group.enter()
             Webservice().load(resource: JsonSchedule.get(schedule.id),
                               session: config.session) { schedule in
@@ -93,23 +93,20 @@ class EventsController: UIViewController, SegueHandler {
             }
             
             config.group.notify(queue: .main) {
-                let versionsEqual = newSchedule?.version == Int(schedule.version)
-                print("new: ")
-                print(newSchedule?.version)
-                print("current: ")
-                print(schedule.version)
-                print(versionsEqual)
-                
-                switch !versionsEqual {
-                    case true: print("update available")
-                    case false: print("no update available")
+                let updateAvailable = (newSchedule?.version)! > Int(schedule.version)
+                switch updateAvailable {
+                    case true: self.performUpdate(config: config, scheduleId: schedule.id)
+                    case false: print("no update available. current version is: \(schedule.version)")
                 }
             }
+        }
+        config.group.leave()
+        config.group.notify(queue: .main) {
+            self.refresh?.endRefreshing()
         }
     }
 
     func performUpdate(config: LoadAndStoreConfiguration, scheduleId: String) {
-        
         Schedule.loadAndStore(identifiedBy: scheduleId, config: config)
         Venue.loadAndStore(identifiedBy: scheduleId, config: config)
         Track.loadAndStore(identifiedBy: scheduleId, config: config)
@@ -119,9 +116,6 @@ class EventsController: UIViewController, SegueHandler {
         config.group.notify(queue: .main) {
             Event.loadAndStore(identifiedBy: scheduleId, config: config)
             config.mainContext?.delayedSaveOrRollback(group: config.group)
-            config.group.notify(queue: .main) {
-                self.refresh?.endRefreshing()
-            }
         }
     }
 
@@ -135,8 +129,11 @@ class EventsController: UIViewController, SegueHandler {
         let request = Event.sortedFetchRequest(with: schedulePredicate!)
         request.fetchBatchSize = 20
         request.returnsObjectsAsFaults = false
-        let frc = NSFetchedResultsController(fetchRequest: request, managedObjectContext: managedObjectContext, sectionNameKeyPath: "startDate", cacheName: nil)
-        dataSource = TableViewDataSource(tableView: eventsTableView, cellIdentifier: "Cell", fetchedResultsController: frc, delegate: self)
+        let frc = NSFetchedResultsController(fetchRequest: request,
+                                             managedObjectContext: managedObjectContext,
+                                             sectionNameKeyPath: "startDate", cacheName: nil)
+        dataSource = TableViewDataSource(tableView: eventsTableView, cellIdentifier: "Cell",
+                                         fetchedResultsController: frc, delegate: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -146,14 +143,13 @@ class EventsController: UIViewController, SegueHandler {
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
         switch segueIdentifier(for: segue) {
         case .showEventDetail:
             guard let vc = segue.destination as? EventDetailController else { fatalError("Wrong view controller type") }
             guard let event = dataSource.selectedObject else { fatalError("Showing detail, but no selected row?") }
             vc.event = event
         case .showFilter:
-            guard let vc = segue.destination as? NewFilterController else { fatalError("Wrong view controller type") }
+            guard let vc = segue.destination as? EventFilterController else { fatalError("Wrong view controller type") }
         }
     }
 }

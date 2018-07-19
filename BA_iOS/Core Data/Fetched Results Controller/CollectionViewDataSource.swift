@@ -1,4 +1,3 @@
-
 import Foundation
 import UIKit
 import CoreData
@@ -19,7 +18,8 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
     fileprivate weak var delegate: Delegate!
     fileprivate let cellIdentifier: String
 
-    required init(collectionView: UICollectionView, cellIdentifier: String, fetchedResultsController: NSFetchedResultsController<Object>, delegate: Delegate) {
+    required init(collectionView: UICollectionView, cellIdentifier: String,
+                  fetchedResultsController: NSFetchedResultsController<Object>, delegate: Delegate) {
         self.collectionView = collectionView
         self.cellIdentifier = cellIdentifier
         self.fetchedResultsController = fetchedResultsController
@@ -31,29 +31,21 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
         collectionView.reloadData()
     }
     
-    // NUMBER OF ITEMS IN SECTION
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print("number of items in section \(section):")
-        print(fetchedResultsController.sections![section].numberOfObjects)
+    func collectionView(_ collectionView: UICollectionView,
+                        numberOfItemsInSection section: Int) -> Int {
         return fetchedResultsController.sections![section].numberOfObjects
-            
-            //.sections?[section] else { return 0 }
-        
-        //return section.numberOfObjects
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        print("number of sections:")
-        print(fetchedResultsController.sections?.count)
         return fetchedResultsController.sections?.count ?? 1
     }
-    
-    
-    // CELL FOR ITEM AT INDEX PATH
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+    func collectionView(_ collectionView: UICollectionView,
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let object = fetchedResultsController.object(at: indexPath)
         
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellIdentifier, for: indexPath) as? Cell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: cellIdentifier, for: indexPath) as? Cell
             else { fatalError("Unexpected cell type at \(indexPath)") }
         delegate.configure(cell, for: object)
         return cell
@@ -69,15 +61,16 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
     }
     
     private var sectionChanges = [(type: NSFetchedResultsChangeType, sectionIndex: Int)]()
-    private var itemChanges = [(type: NSFetchedResultsChangeType, indexPath: IndexPath?, newIndexPath: IndexPath?)]()
+    private var itemChanges = [(type: NSFetchedResultsChangeType,
+                                indexPath: IndexPath?, newIndexPath: IndexPath?)]()
     
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange sectionInfo: NSFetchedResultsSectionInfo, atSectionIndex sectionIndex: Int, for type: NSFetchedResultsChangeType) {
-        print("controller didChange sectionInfo")
         sectionChanges.append((type, sectionIndex))
     }
     
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
-        print("controller didChange at Index Path")
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>,
+                    didChange anObject: Any, at indexPath: IndexPath?,
+                    for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?){
         itemChanges.append((type, indexPath, newIndexPath))
     }
     
@@ -87,7 +80,6 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
             for change in self.sectionChanges {
                 switch change.type {
                 case .insert: self.collectionView.insertSections([change.sectionIndex])
-                     print("insert section")
                 case .delete: self.collectionView.deleteSections([change.sectionIndex])
                 default: break
                 }
@@ -96,7 +88,6 @@ class CollectionViewDataSource<Delegate: CollectionViewDataSourceDelegate>: NSOb
             for change in self.itemChanges {
                 switch change.type {
                 case .insert: self.collectionView.insertItems(at: [change.newIndexPath!])
-                    print("insert item")
                 case .delete: self.collectionView.deleteItems(at: [change.indexPath!])
                 case .update: self.collectionView.reloadItems(at: [change.indexPath!])
                 case .move:

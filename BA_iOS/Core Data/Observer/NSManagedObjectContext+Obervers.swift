@@ -1,14 +1,5 @@
-//
-//  Notifications.swift
-//  Moody
-//
-//  Created by Daniel Eggert on 24/05/2015.
-//  Copyright (c) 2015 objc.io. All rights reserved.
-//
-
 import Foundation
 import CoreData
-
 
 public struct ContextDidSaveNotification {
     
@@ -34,9 +25,6 @@ public struct ContextDidSaveNotification {
         return c
     }
     
-    
-    // MARK: Private
-    
     fileprivate let notification: Notification
     
     fileprivate func iterator(forKey key: String) -> AnyIterator<NSManagedObject> {
@@ -52,7 +40,9 @@ extension ContextDidSaveNotification: CustomDebugStringConvertible {
     public var debugDescription: String {
         var components = [notification.name.rawValue]
         components.append(managedObjectContext.description)
-        for (name, set) in [("inserted", insertedObjects), ("updated", updatedObjects), ("deleted", deletedObjects)] {
+        for (name, set) in [("inserted", insertedObjects),
+                            ("updated", updatedObjects),
+                            ("deleted", deletedObjects)] {
             let all = set.map { $0.objectID.description }.joined(separator: ", ")
             components.append("\(name): {\(all)})")
         }
@@ -60,8 +50,8 @@ extension ContextDidSaveNotification: CustomDebugStringConvertible {
     }
 }
 
-
 public struct ContextWillSaveNotification {
+    fileprivate let notification: Notification
     
     public init(note: Notification) {
         assert(note.name == .NSManagedObjectContextWillSave)
@@ -69,17 +59,12 @@ public struct ContextWillSaveNotification {
     }
     
     public var managedObjectContext: NSManagedObjectContext {
-        guard let c = notification.object as? NSManagedObjectContext else { fatalError("Invalid notification object") }
+        guard let c = notification.object as? NSManagedObjectContext else {
+            fatalError("Invalid notification object")
+        }
         return c
     }
-    
-    
-    // MARK: Private
-    
-    fileprivate let notification: Notification
-    
 }
-
 
 public struct ObjectsDidChangeNotification {
     
@@ -113,30 +98,25 @@ public struct ObjectsDidChangeNotification {
     }
     
     public var managedObjectContext: NSManagedObjectContext {
-        guard let c = notification.object as? NSManagedObjectContext else { fatalError("Invalid notification object") }
+        guard let c = notification.object as? NSManagedObjectContext else {
+            fatalError("Invalid notification object")
+        }
         return c
     }
-    
-    
-    // MARK: Private
     
     fileprivate let notification: Notification
     
     fileprivate func objects(forKey key: String) -> Set<NSManagedObject> {
         return ((notification as Notification).userInfo?[key] as? Set<NSManagedObject>) ?? Set()
     }
-    
 }
 
-
 extension NSManagedObjectContext {
-    
     /// Adds the given block to the default `NotificationCenter`'s dispatch table for the given context's did-save notifications.
     /// - returns: An opaque object to act as the observer. This must be sent to the default `NotificationCenter`'s `removeObserver()`.
     public func addContextDidSaveNotificationObserver(_ handler: @escaping (ContextDidSaveNotification) -> ()) -> NSObjectProtocol {
         let nc = NotificationCenter.default
         return nc.addObserver(forName: .NSManagedObjectContextDidSave, object: self, queue: nil) { note in
-            print("context did save")
             let wrappedNote = ContextDidSaveNotification(note: note)
             handler(wrappedNote)
         }
@@ -148,7 +128,6 @@ extension NSManagedObjectContext {
         let nc = NotificationCenter.default
         return nc.addObserver(forName: .NSManagedObjectContextWillSave, object: self, queue: nil) { note in
             let wrappedNote = ContextWillSaveNotification(note: note)
-            print("context will save")
             handler(wrappedNote)
         }
     }
@@ -164,10 +143,8 @@ extension NSManagedObjectContext {
     }
     
     public func performMergeChanges(from note: ContextDidSaveNotification) {
-        print("perform")
         perform {
             self.mergeChanges(fromContextDidSave: note.notification)
-            print("merge changes")
         }
     }
 }

@@ -1,14 +1,5 @@
-//
-//  ManagedObjectChangeObserver.swift
-//  Moody
-//
-//  Created by Daniel Eggert on 15/05/2015.
-//  Copyright (c) 2015 objc.io. All rights reserved.
-//
-
 import Foundation
 import CoreData
-
 
 final class ManagedObjectObserver {
     enum ChangeType {
@@ -27,12 +18,11 @@ final class ManagedObjectObserver {
     deinit {
         NotificationCenter.default.removeObserver(token)
     }
-    
-    // MARK: Private
-    
+
     fileprivate var token: NSObjectProtocol!
     
-    fileprivate func changeType(of object: NSManagedObject, in note: ObjectsDidChangeNotification) -> ChangeType? {
+    fileprivate func changeType(of object: NSManagedObject,
+                                in note: ObjectsDidChangeNotification) -> ChangeType? {
         let deleted = note.deletedObjects.union(note.invalidatedObjects)
         if note.invalidatedAllObjects || deleted.containsObjectIdentical(to: object) {
             return .delete
@@ -44,4 +34,3 @@ final class ManagedObjectObserver {
         return nil
     }
 }
-

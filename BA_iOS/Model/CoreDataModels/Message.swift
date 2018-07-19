@@ -28,11 +28,10 @@ extension Message: Managed {
     }
     
     static var defaultSortDescriptors: [NSSortDescriptor] {
-        return [NSSortDescriptor(key: #keyPath(created), ascending: true)]
+        return [NSSortDescriptor(key: #keyPath(created), ascending: false)]
     }
     
     static func insert(into context: NSManagedObjectContext, json: JsonMessage) -> Message {
-        print("new object")
         let message: Message = context.insertObject()
         
         message.id = Int32(json.id)

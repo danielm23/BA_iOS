@@ -13,20 +13,8 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         case showScanner = "showScanner"
     }
     
-    /*
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .default
-    }
-     */
-    /*
-    @IBAction func unwind(_ seque: UIStoryboardSegue) {
-        if let sourceVC = seque.source as? ScannerController {
-            if let id = sourceVC.qrCode {
-                print(id)
-                //loadEntities(ofScheudle: id)
-            }
-        }
-    }*/
+    
+    @IBAction func unwind(_ seque: UIStoryboardSegue) {}
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +25,7 @@ class SchedulesCollectionController: UICollectionViewController, SegueHandler {
         }
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.navigationItem.largeTitleDisplayMode = .never
-        self.navigationController?.navigationBar.topItem?.title = "Schedules"
+        self.navigationController?.navigationBar.topItem?.title = "Veranstaltungen"
         setupCollectionView()
     }
     

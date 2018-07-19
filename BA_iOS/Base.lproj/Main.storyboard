@@ -85,11 +85,11 @@
                             </connections>
                         </barButtonItem>
                         <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="Msf-fQ-zwF">
-                            <rect key="frame" x="118" y="7" width="139" height="30"/>
+                            <rect key="frame" x="117" y="7" width="141" height="30"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <segments>
                                 <segment title="All"/>
-                                <segment title="Favorites"/>
+                                <segment title="Favoriten"/>
                             </segments>
                             <connections>
                                 <action selector="segmentedControllerChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="PrY-nq-3vC"/>
@@ -220,10 +220,10 @@
             </objects>
             <point key="canvasLocation" x="1568.8" y="1716.7916041979013"/>
         </scene>
-        <!--Filter Events-->
+        <!--Programmpunkte-->
         <scene sceneID="gaR-a2-dIb">
             <objects>
-                <tableViewController title="Filter Events" id="LbS-K7-JYU" customClass="NewFilterController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="Programmpunkte" id="LbS-K7-JYU" customClass="EventFilterController" customModule="BA_iOS" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="EAH-HB-nte">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -336,7 +336,7 @@
         <scene sceneID="Ezi-gV-akK">
             <objects>
                 <navigationController storyboardIdentifier="EventsNavigationController" title="Events Navigator" automaticallyAdjustsScrollViewInsets="NO" id="1m7-9t-jIK" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" tag="1" title="Events" image="calendar" id="tbZ-dR-f6E"/>
+                    <tabBarItem key="tabBarItem" tag="1" title="Programm" image="calendar" id="tbZ-dR-f6E"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="3v6-aD-LY4">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -514,11 +514,11 @@
             </objects>
             <point key="canvasLocation" x="-193" y="1719"/>
         </scene>
-        <!--Map-->
+        <!--Karte-->
         <scene sceneID="H41-wJ-Xo7">
             <objects>
                 <navigationController storyboardIdentifier="MapNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="kIK-nM-r2R" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" tag="2" title="Map" image="map_marker" id="5n5-Ee-7z4"/>
+                    <tabBarItem key="tabBarItem" tag="2" title="Karte" image="map_marker" id="5n5-Ee-7z4"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="8d6-LV-sGm">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -695,11 +695,11 @@
             </objects>
             <point key="canvasLocation" x="2493.5999999999999" y="2561.4692653673164"/>
         </scene>
-        <!--Messages-->
+        <!--Nachrichten-->
         <scene sceneID="hoZ-uP-m81">
             <objects>
                 <navigationController id="pjS-Tb-Bkl" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" tag="3" title="Messages" image="news" id="1fd-tJ-GZD"/>
+                    <tabBarItem key="tabBarItem" tag="3" title="Nachrichten" image="news" id="1fd-tJ-GZD"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="V57-yH-RoF">
                         <rect key="frame" x="0.0" y="20" width="375" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -716,7 +716,7 @@
         <scene sceneID="isu-xr-KET">
             <objects>
                 <navigationController title="ScheduleNavigator" automaticallyAdjustsScrollViewInsets="NO" id="EFF-rO-5lZ" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Schedules" image="dashboard" id="kVK-RY-B2H"/>
+                    <tabBarItem key="tabBarItem" title="Veranstaltungen" image="dashboard" id="kVK-RY-B2H"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="03d-cY-u1m">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>

@@ -7,7 +7,6 @@ protocol TableViewDataSourceDelegate: class {
     func configure(_ cell: Cell, for object: Object)
 }
 
-/// Note: this class doesn't support working with multiple sections
 class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITableViewDataSource, NSFetchedResultsControllerDelegate {
     typealias Object = Delegate.Object
     typealias Cell = Delegate.Cell
@@ -30,7 +29,6 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     }
     
     func objectAtIndexPath(_ indexPath: IndexPath) -> Object {
-        
         return fetchedResultsController.object(at: indexPath)
     }
     
@@ -45,11 +43,8 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         NSFetchedResultsController<NSFetchRequestResult>.deleteCache(withName: fetchedResultsController.cacheName)
         do { try fetchedResultsController.performFetch() } catch { fatalError("fetch request failed") }
         tableView.reloadData()
-        print("update")
     }
 
-    
-    // MARK: Private
     let tableView: UITableView
     let fetchedResultsController: NSFetchedResultsController<Object>
     fileprivate weak var delegate: Delegate!
@@ -68,14 +63,11 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         else { return all! }
     }
     
-    // ROWS IN SECTION
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = fetchedResultsController.sections?[section] else { return 0 }
         return section.numberOfObjects
-        //return filteredItems().count
     }
     
-    // CELL FOR ROW AT INDEX PATH
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let object = fetchedResultsController.object(at: indexPath)//filteredItems()[indexPath.item]
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? Cell
@@ -84,13 +76,11 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         return cell
     }
     
-    // NUMBER OF SECTIONS
     func numberOfSections(in tableView: UITableView) -> Int {
         return fetchedResultsController.sections?.count ?? 0
         
     }
     
-    // TITLE FOR HEADER IN SECTION
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let dateString = fetchedResultsController.sections![section].name
         return configureSection(for: dateString)
@@ -98,7 +88,6 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     
     func configureSection(for date: String) -> String{
         var output = date
-        print(date)
         if fetchedResultsController.sectionNameKeyPath == "startDate" {
             let inputFormatter = DateFormatter()
             inputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss +zzzz"
@@ -114,7 +103,6 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         return output
     }
     
-    // MARK: NSFetchedResultsControllerDelegate
     func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.beginUpdates()
     }
@@ -159,7 +147,6 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
         default:
             break
         }
-        
     }
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {

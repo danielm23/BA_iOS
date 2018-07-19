@@ -1,11 +1,3 @@
-//
-//  QRScannerController.swift
-//  QRCodeReader
-//
-//  Created by Simon Ng on 13/10/2016.
-//  Copyright © 2016 AppCoda. All rights reserved.
-//
-
 import UIKit
 import AVFoundation
 import CoreData
@@ -151,5 +143,3 @@ extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
         }
     }
 }
-
-

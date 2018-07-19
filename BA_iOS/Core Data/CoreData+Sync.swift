@@ -1,13 +1,4 @@
-//
-//  CoreData+Sync.swift
-//  Moody
-//
-//  Created by Daniel Eggert on 30/08/2015.
-//  Copyright © 2015 objc.io. All rights reserved.
-//
-
 import CoreData
-
 
 extension NSManagedObjectContext {
     func perform(group: DispatchGroup, block: @escaping () -> ()) {
@@ -18,7 +9,6 @@ extension NSManagedObjectContext {
         }
     }
 }
-
 
 extension Sequence where Iterator.Element: NSManagedObject {
     func remap(to context: NSManagedObjectContext) -> [Iterator.Element] {
@@ -37,7 +27,6 @@ extension NSManagedObjectContext {
     
     func delayedSaveOrRollback(group: DispatchGroup, completion: @escaping (Bool) -> () = { _ in }) {
         let changeCountLimit = 100
-        print(changedObjectsCount)
         guard changeCountLimit >= changedObjectsCount else { return completion(saveOrRollback()) }
         let queue = DispatchQueue.global(qos: DispatchQoS.QoSClass.default)
         group.notify(queue: queue) {
