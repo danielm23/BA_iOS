@@ -98,7 +98,7 @@ class ScannerController: UIViewController {
     
     func loadEntities(ofScheudle id: String) {
         insertInProgress = true
-        let sv = UIViewController.displaySpinner(onView: self.view)
+        let loadingSpinner = UIViewController.displaySpinner(onView: self.view)
         var loadConfig = LoadAndStoreConfiguration()
         loadConfig.set(mainContext: managedObjectContext)
         
@@ -111,7 +111,7 @@ class ScannerController: UIViewController {
         loadConfig.group.notify(queue: .main) {
             Event.loadAndStore(identifiedBy: id, config: loadConfig)
             loadConfig.group.notify(queue: .main) {
-                UIViewController.removeSpinner(spinner: sv)
+                UIViewController.removeSpinner(spinner: loadingSpinner)
                 self.performSegue(withIdentifier: "unwindFromScanner", sender: self.qrCode)
             }
         }

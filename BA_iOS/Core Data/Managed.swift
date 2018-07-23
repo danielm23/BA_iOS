@@ -40,7 +40,7 @@ extension Managed where Self: NSManagedObject {
         configurationBlock(request)
         return try! context.fetch(request)
     }
-    
+
     static func findOrFetch(in context: NSManagedObjectContext,
                             matching predicate: NSPredicate) -> Self? {
         guard let object = materializedObject(in: context, matching: predicate) else {

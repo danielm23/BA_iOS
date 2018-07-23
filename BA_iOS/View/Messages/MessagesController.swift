@@ -72,15 +72,19 @@ class MessagesController: UITableViewController {
     
     @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
         
-        var config = LoadAndStoreConfiguration()
-        config.set(mainContext: managedObjectContext)
-        config.set(syncContext: syncContext!)
+        var updateConfig = LoadAndStoreConfiguration()
+        updateConfig.set(mainContext: managedObjectContext)
+        updateConfig.set(syncContext: syncContext!)
         
+        checkForUpdate(config: updateConfig)
+    }
+    
+    func checkForUpdate(config: LoadAndStoreConfiguration) {
         var insertedMessageIds = Set<Int>()
         var currentMessageIds = Set<Int>()
         let currentMessages = dataSource.fetchedResultsController.fetchedObjects
         let currentSchedules = getSchedules(from: config.mainContext!)
-
+        
         for msg in currentMessages! {
             currentMessageIds.insert(Int(msg.id))
         }
@@ -89,22 +93,22 @@ class MessagesController: UITableViewController {
             config.group.enter()
             Webservice().load(resource: JsonSchedule.getMessages(of: schedule.id),
                               session: config.session) { messages in
-                for message in messages! {
-                    insertedMessageIds.insert(message.id)
-                    let _ = Message.insert(into: config.syncContext!, json: message)
-                    config.syncContext?.delayedSaveOrRollback(group: config.group)
-                }
-                config.group.leave()
+                                for message in messages! {
+                                    insertedMessageIds.insert(message.id)
+                                    let _ = Message.insert(into: config.syncContext!, json: message)
+                                    config.syncContext?.delayedSaveOrRollback(group: config.group)
+                                }
+                                config.group.leave()
             }
         }
         
         config.group.notify(queue: .main) {
             let deletedMessages = currentMessageIds.subtracting(insertedMessageIds)
-           
+            
             for messageId in deletedMessages {
                 let messagePredicate = NSPredicate(format: "%K == %d", "id", Int32(messageId))
                 let messageToDelete = Message.findOrFetch(in: config.mainContext!, matching: messagePredicate)
-
+                
                 config.mainContext!.performChanges {
                     config.mainContext!.delete(messageToDelete!)
                 }
@@ -112,6 +116,7 @@ class MessagesController: UITableViewController {
             self.refresh?.endRefreshing()
         }
     }
+
 
     func getSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
         let request = Schedule.sortedFetchRequest

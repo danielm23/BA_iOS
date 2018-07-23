@@ -70,7 +70,6 @@ extension Schedule {
             config.group.leave()
         }
     }
-    
 
     static func loadCurrentSchedules(from context: NSManagedObjectContext) -> [Schedule]? {
         let request = Schedule.sortedFetchRequest

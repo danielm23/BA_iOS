@@ -45,7 +45,7 @@ extension Message: Managed {
         
         return message
     }
-    
+
     static func loadAndStore(identifiedBy scheduleId: String, config: LoadAndStoreConfiguration) {
         config.group.enter()
         print("load messages")
