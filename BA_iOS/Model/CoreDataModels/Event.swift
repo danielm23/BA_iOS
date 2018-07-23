@@ -50,7 +50,7 @@ extension Event: Managed {
         return [NSSortDescriptor(key: #keyPath(startDate), ascending: true)]
     }
     
-    internal static func insert(into context: NSManagedObjectContext, json: JsonEvent) -> Event {
+    /*internal*/ static func insert(into context: NSManagedObjectContext, json: JsonEvent) -> Event {
         
         var config = LoadAndStoreConfiguration()
         config.set(mainContext: context)
@@ -64,26 +64,19 @@ extension Event: Managed {
         event.isFavorite = false
         event.startDate = json.startDate
         event.endDate = json.endDate
-        //context.delayedSaveOrRollback(group: config.group)
-        print("EVENT: ")
-        print(event)
-        
         
         let schedulePredicate = NSPredicate(format: "%K == %@", #keyPath(id), json.scheduleId)
         event.schedule = Schedule.findOrFetch(in: context, matching: schedulePredicate)
-        //context.delayedSaveOrRollback(group: config.group)
 
         
         if (json.venueId != nil){
             let venuePredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.venueId!)
             event.venue = Venue.findOrFetch(in: context, matching: venuePredicate)
-            //context.delayedSaveOrRollback(group: config.group)
         }
         
         if (json.trackId != nil) {
             let trackPredicate = NSPredicate(format: "%K == %ld", #keyPath(id), json.trackId!)
             event.track = Track.findOrFetch(in: context, matching: trackPredicate)
-            //context.delayedSaveOrRollback(group: config.group)
         }
         
 

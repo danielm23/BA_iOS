@@ -7,11 +7,10 @@ public class Category: NSManagedObject {
     @NSManaged fileprivate(set) var id: Int32
     @NSManaged fileprivate(set) var title: String
     @NSManaged fileprivate(set) var color: Int64
-    @NSManaged fileprivate(set) var isActive: Bool
+    @NSManaged var isActive: Bool
     
     @NSManaged public fileprivate(set) var schedule: Schedule?
     @NSManaged fileprivate(set) var events: Set<Event>?
-
 }
 
 extension Category: Managed {
@@ -49,9 +48,6 @@ extension Category: Managed {
             config.group.leave()
         }
     }
-    
-    public func setActive() {
-        isActive = !isActive
-        print(isActive)
-    }
 }
+
+extension Category: Switchable { }

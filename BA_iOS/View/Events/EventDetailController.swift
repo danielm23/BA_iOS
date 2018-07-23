@@ -92,11 +92,6 @@ class EventDetailController: UIViewController /*, SegueHandler*/ {
         }
     }
     
-    fileprivate func updateMapView() {
-        guard let map = mapView else { return }
-        mapView?.mapType = .hybrid
-    }
-    
     func loadGeoInfos() {
         var config = LoadAndStoreConfiguration()
         config.mainContext = managedObjectContext

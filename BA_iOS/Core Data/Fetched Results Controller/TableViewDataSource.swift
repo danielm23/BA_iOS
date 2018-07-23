@@ -49,27 +49,14 @@ class TableViewDataSource<Delegate: TableViewDataSourceDelegate>: NSObject, UITa
     let fetchedResultsController: NSFetchedResultsController<Object>
     fileprivate weak var delegate: Delegate!
     fileprivate let cellIdentifier: String
-    
-    var searchPredicate: NSPredicate? = nil
-    
-    func filteredItems() -> [Delegate.Object] {
-        let all = fetchedResultsController.fetchedObjects
-        if (searchPredicate != nil) {
-            let filteredArray = all?.filter {
-                (searchPredicate?.evaluate(with: $0))!
-            }
-            return filteredArray!
-        }
-        else { return all! }
-    }
-    
+        
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let section = fetchedResultsController.sections?[section] else { return 0 }
         return section.numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let object = fetchedResultsController.object(at: indexPath)//filteredItems()[indexPath.item]
+        let object = fetchedResultsController.object(at: indexPath)
         guard let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as? Cell
             else { fatalError("Unexpected cell type at \(indexPath)") }
         delegate.configure(cell, for: object)

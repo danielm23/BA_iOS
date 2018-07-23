@@ -11,7 +11,7 @@ public class Schedule: NSManagedObject {
     
     // status info
     @NSManaged fileprivate(set) var version: Int32
-    @NSManaged fileprivate(set) var isActive: Bool
+    @NSManaged var isActive: Bool
 
     // dates
     @NSManaged fileprivate(set) var startDate: Date?
@@ -32,11 +32,6 @@ public class Schedule: NSManagedObject {
         }
         return schedule
     }*/
-    
-    public func setActive() {
-        isActive = !isActive
-        print(isActive)
-    }
 }
 
 extension Schedule: Managed {
@@ -84,5 +79,8 @@ extension Schedule {
         
         return schedules
     }
-
 }
+
+extension Schedule: Switchable {}
+
+

@@ -36,3 +36,16 @@ extension UIViewController {
         }
     }
 }
+
+
+protocol Switchable {
+
+    var isActive: Bool { get set }
+    mutating func setActive()
+}
+
+extension Switchable {
+    public mutating func setActive() {
+        isActive = !isActive
+    }
+}

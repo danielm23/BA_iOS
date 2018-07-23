@@ -6,6 +6,7 @@ import CoreData
     
     associatedtype Input: Decodable
     associatedtype Output: Managed
+    
     associatedtype Identifier
     
     static func insert(into context: NSManagedObjectContext, json: Input) -> Output
@@ -32,14 +33,6 @@ extension Managed where Self: NSManagedObject {
     
     static var entityName: String { return entity().name!  }
 
-    static func FindOrLoad(in context: NSManagedObjectContext,
-                           matching predicate: NSPredicate, load: () -> (Self)) -> Self {
-        guard let object = findOrFetch(in: context, matching: predicate) else {
-            let newObject = load()
-            return newObject
-        }
-        return object
-    }
     
     static func fetch(in context: NSManagedObjectContext,
                       configurationBlock: (NSFetchRequest<Self>) -> () = { _ in }) -> [Self] {

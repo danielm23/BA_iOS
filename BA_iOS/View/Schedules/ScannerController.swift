@@ -78,7 +78,7 @@ class ScannerController: UIViewController {
         UIApplication.shared.statusBarStyle = UIStatusBarStyle.default
     }
 
-    func launchApp(qrCode: String) {
+    func read(qrCode: String) {
         if presentedViewController != nil {
             return
         }
@@ -137,7 +137,7 @@ extension ScannerController: AVCaptureMetadataOutputObjectsDelegate {
             
             if metadataObj.stringValue != nil && !insertInProgress! {
                 qrCode = metadataObj.stringValue!
-                launchApp(qrCode: qrCode!)
+                read(qrCode: qrCode!)
                 //messageLabel.text = metadataObj.stringValue!
             }
         }

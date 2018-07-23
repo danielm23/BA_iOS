@@ -20,17 +20,17 @@ class EventsController: UIViewController, SegueHandler {
     var syncContext: NSManagedObjectContext?
 
     // filter predicates
-    var activeSchedules: NSPredicate? = nil
-    var favoriteEvents: NSPredicate? = nil
-    var activeCategories: NSPredicate? = nil
+    var activeSchedulesPredicate: NSPredicate? = nil
+    var favoriteEventsPredicate: NSPredicate? = nil
+    var activeCategoriesPrediate: NSPredicate? = nil
     var predicates: [NSPredicate] = []
     var schedulePredicate: NSCompoundPredicate? = nil
     
     
     @IBAction func segmentedControllerChange(_ sender: Any) {
         switch segmentedControl.selectedSegmentIndex {
-        case 1: predicates = [activeSchedules ,favoriteEvents] as! [NSPredicate]
-        default: predicates = [activeSchedules] as! [NSPredicate]
+        case 1: predicates = [activeSchedulesPredicate ,favoriteEventsPredicate] as! [NSPredicate]
+        default: predicates = [activeSchedulesPredicate] as! [NSPredicate]
         }
         configureTableView()
     }
@@ -53,16 +53,17 @@ class EventsController: UIViewController, SegueHandler {
             syncContext = (self.tabBarController as! TabBarController).syncContext
             syncContext?.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         }
-        syncContext?.addContextDidSaveNotificationObserver { [weak self] note in
+        _ = syncContext?.addContextDidSaveNotificationObserver { [weak self] note in
             self?.managedObjectContext.performMergeChanges(from: note)
         }
     }
     
     fileprivate func configurePredicates() {
-        activeSchedules = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
-        favoriteEvents = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
-        activeCategories = NSPredicate(format: "ANY categories.isActive == true || categories.@count = 0")
-        predicates = [activeSchedules, activeCategories] as! [NSPredicate]
+        favoriteEventsPredicate = NSPredicate(format: "isFavorite == %@", NSNumber(value: true))
+
+        activeSchedulesPredicate = NSPredicate(format: "%K == %@", "schedule.isActive", NSNumber(value: true))
+        activeCategoriesPrediate = NSPredicate(format: "ANY categories.isActive == true || categories.@count = 0")
+        predicates = [activeSchedulesPredicate, activeCategoriesPrediate] as! [NSPredicate]
     }
     
     fileprivate func configurePullToRefresh() {
